@@ -1,2 +1,2 @@
 # TranslonBM
-ORF BenchMark
+ A unified framework for benchmarking translon detection
