@@ -229,7 +229,7 @@ docker run -it --rm translon-detector-aligner:v1 /bin/bash
 ```
 
 | Image | Contents |
-|---|---|
+|:---|:---|
 | `translon-detector-aligner:v1` | STAR 2.7.10b, HISAT2, TopHat2 |
 | `translon-detector-ribohmm:v1` | RiboHMM |
 | `translon-detector-orfquant:v1` | RiboseQC, ORFquant |
