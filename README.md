@@ -1,5 +1,6 @@
 # TranslonBM
- A unified framework for benchmarking translon detection
+
+**A unified framework for benchmarking translon detection**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![R](https://img.shields.io/badge/R-%3E%3D4.1-276DC3?logo=r)
@@ -24,8 +25,8 @@
 TranslonBM is a unified benchmarking framework for evaluating computational tools that detect translons — actively translated open reading frames (ORFs) identified from Ribo-seq data. The framework covers three stages of a complete benchmarking workflow:
 
 1. **RiboSim** — A Flexible Ribo-seq Data Simulator
-2. **Pipeline** — 
-3. **Evaluation** — 
+2. **Pipeline** — Ribo-seq data preprocessing, alignment, ORF prediction, and output standardization
+3. **Evaluation** — Statistical analysis, benchmark evaluation, and figure plotting
 
 ---
 
@@ -33,13 +34,25 @@ TranslonBM is a unified benchmarking framework for evaluating computational tool
 
 ```
 TranslonBM/
-├── RiboSim/                        # Ribo-seq RPF data simulator
-│   ├── Simulation.R                # Main simulation script
-│   └── Require Input Data/         # Required input files (see details below)
+├── RiboSim/                              # Ribo-seq RPF data simulator
+│   ├── Simulation.R                      # Main simulation script
+│   └── Require Input Data/               # Required input files
 │
-├── Pipeline/                       # 
+├── Pipeline/                             # Ribo-seq data preprocessing and ORF prediction
+│   ├── ORF_detect_Riboseq/               # ORF prediction on real Ribo-seq datasets
+│   │   └── scripts/
+│   ├── ORF_detect_Synthetic/             # ORF prediction on synthetic datasets
+│   │   └── scripts/
+│   ├── ORF_reformat/                     # Standardize ORF prediction output format
+│   │   └── scripts/
+│   └── trim5prime_scripts/               # 5' end mismatch trimming and remapping
+│       └── scripts/
 │
-├── Evaluation/                     # 
+├── Evaluation/                           # Benchmark analysis and figure plotting scripts
+│   ├── Fig1/
+│   ├── Fig2/
+│   ├── Fig3/
+│   └── Fig4/
 │
 └── README.md
 ```
@@ -61,18 +74,18 @@ The output FASTQ encodes all ground truth information in the read header, enabli
 
 #### Requirements
 
-Install R packages:
-
-```r
-install.packages(c("argparse", "furrr", "tidyverse"))
-```
-
 Install RiboSim (recommended via conda):
 
 ```bash
 conda create -n RiboSim python=3.8
 conda activate RiboSim
 pip install gppy
+```
+
+Install R packages:
+
+```r
+install.packages(c("argparse", "furrr", "tidyverse"))
 ```
 
 #### Required Input Files
@@ -169,13 +182,73 @@ All output files are prefixed with `simulation_<counts>M_<replicate>` (e.g. `sim
 
 ### Pipeline
 
-> 🚧 Documentation in progress.
+The Pipeline module contains Snakemake workflows for Ribo-seq data preprocessing, alignment, ORF prediction, and output standardization.
+
+#### ORF_detect_Riboseq
+
+Snakemake workflows for running 11 ORF prediction tools on 6 real Ribo-seq datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
+
+- `scripts/` — Helper scripts called by the Snakemake workflows
+
+#### ORF_detect_Synthetic
+
+Snakemake workflows for running 9 ORF prediction tools on 4 simulation datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
+
+- `scripts/` — Helper scripts called by the Snakemake workflows
+
+#### ORF_reformat
+
+Standardizes the raw output of 11 ORF prediction tools into a unified genome-based exon block format. The reformatted results include gene information, genomic coordinates, start codon, nucleotide sequence, and amino acid sequence, and are used for downstream benchmark analysis.
+
+- `scripts/` — Helper scripts called by the Snakemake workflows
+
+#### trim5prime_scripts
+
+Removes mismatched bases at the first 2 nt of the 5′ end of Ribo-seq reads, then remaps the trimmed reads using three alignment tools (STAR, HISAT2, TopHat2).
+
+- `scripts/` — Helper scripts called by the Snakemake workflows
+
+#### Environment Setup
+
+```bash
+conda activate snakemake_env
+
+snakemake -s ./Pipeline/ORF_detect_Riboseq/snakemake_ribocode.smk -j 6 --keep-going -p --use-conda
+```
+
+#### Docker Images
+
+Pre-built Docker images are provided for reproducibility. To use them:
+
+```bash
+# Import image from local file
+gunzip -c translon-detector-aligner_v1.tar.gz | docker load
+
+# Run image
+docker run -it --rm translon-detector-aligner:v1 /bin/bash
+```
+
+| Image | Contents |
+|---|---|
+| `translon-detector-aligner:v1` | STAR 2.7.10b, HISAT2, TopHat2 |
+| `translon-detector-ribohmm:v1` | RiboHMM |
+| `translon-detector-orfquant:v1` | RiboseQC, ORFquant |
+| `translon-detector-suite:v1` | GEDI, ORFrater, RiboCode, RiboTaper, ribotricer, Rp-Bp, RibORF, Ribo-TISH, RiboWave |
+
+All images include `snakemake_env` for running Snakemake workflows.
 
 ---
 
 ### Evaluation
 
-> 🚧 Documentation in progress.
+The Evaluation module contains statistical analysis and plotting scripts for the main benchmark results (Figures 1–4 in the manuscript).
+
+| Directory | Contents |
+|---|---|
+| `Fig1/` | Data quality and preprocessing evaluation scripts |
+| `Fig2/` | ORF prediction overlap analysis scripts |
+| `Fig3/` | Benchmark scoring scripts (TIS, TISeq, MS) |
+| `Fig4/` | Tool combination analysis and runtime benchmark scripts |
 
 ---
 
