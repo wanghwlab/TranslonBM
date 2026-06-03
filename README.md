@@ -186,13 +186,13 @@ The Pipeline module contains Snakemake workflows for Ribo-seq data preprocessing
 
 #### ORF_detect_Riboseq
 
-Snakemake workflows for running 11 ORF prediction tools on 6 real Ribo-seq datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
+Snakemake workflows for running 11 ORF prediction tools (GEDI, ORFrater, RiboCode, RiboTaper, ribotricer, Rp-Bp, RibORF, Ribo-TISH, RiboWave, ORFquant, RiboHMM) on 6 real Ribo-seq datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
 
 - `scripts/` — Helper scripts called by the Snakemake workflows
 
 #### ORF_detect_Synthetic
 
-Snakemake workflows for running 9 ORF prediction tools on 4 simulation datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
+Snakemake workflows for running 9 ORF prediction tools (GEDI, ORFrater, RiboCode, ribotricer, Rp-Bp, RibORF, Ribo-TISH, RiboWave, ORFquant) on 4 synthetic datasets. All tools are run with default parameters and unified to use NTG start codons (ATG or tool default if NTG is not configurable).
 
 - `scripts/` — Helper scripts called by the Snakemake workflows
 
