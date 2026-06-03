@@ -233,7 +233,7 @@ docker run -it --rm translon-detector-aligner:v1 /bin/bash
 | `translon-detector-aligner:v1` | STAR 2.7.10b, HISAT2, TopHat2 |
 | `translon-detector-ribohmm:v1` | RiboHMM |
 | `translon-detector-orfquant:v1` | RiboseQC, ORFquant |
-| `translon-detector-suite:v1` | GEDI, ORFrater, RiboCode, RiboTaper, ribotricer, Rp-Bp, RibORF, Ribo-TISH, RiboWave |
+| `translon-detector-suite:v1` | GEDI, ORFrater, RiboCode, RiboTaper, ribotricer, <br> Rp-Bp, RibORF, Ribo-TISH, RiboWave |
 
 All images include `snakemake_env` for running Snakemake workflows.
 
