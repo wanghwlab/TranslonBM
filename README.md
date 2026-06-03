@@ -102,7 +102,11 @@ All input files should be placed in a single directory and passed via `--Path_di
 | `codons_freq.tsv` | Codon usage frequency table |
 | `gtf.py` | gppy coordinate conversion script |
 
-Example files are provided in [`RiboSim/Require Input Data/`](RiboSim/Require%20Input%20Data/).
+All required input files are packaged as `RiboSim_input_data.zip` and available for download at:
+
+> [https://doi.org/10.5281/zenodo.20406597](https://doi.org/10.5281/zenodo.20406597)
+
+After downloading, extract the zip and pass the directory path to `--Path_dir`.
 
 #### Usage
 
