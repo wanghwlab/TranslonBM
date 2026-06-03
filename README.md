@@ -41,7 +41,7 @@ TranslonBM/
 ├── Pipeline/                             # Ribo-seq data preprocessing and ORF prediction
 │   ├── ORF_detect_Riboseq/               # ORF prediction on real Ribo-seq datasets
 │   │   └── scripts/
-│   ├── ORF_detect_Synthetic/             # ORF prediction on synthetic datasets
+│   ├── ORF_detect_Synthetic/             # ORF prediction on simulation datasets
 │   │   └── scripts/
 │   ├── ORF_reformat/                     # Standardize ORF prediction output format
 │   │   └── scripts/
