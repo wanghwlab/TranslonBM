@@ -3,9 +3,6 @@
 import os
 import pandas as pd # 新增: 导入pandas库
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
 
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_simu_6M.tsv"
 
@@ -18,9 +15,7 @@ SPE = 'Human'
 MAPPING_SOFTWARE = ['hisat2', 'STAR', 'tophat2']
 GEDI = '/home/tangyuewen/software/Gedi/gedi-Gedi_1.0.6a/Gedi/gedi'
 
-#################################
-# 2. 路径定义
-#################################
+
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_simu_untrim/gedi"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping/simulation"
 
@@ -29,9 +24,6 @@ FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 
 SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/scripts"
 
-#################################
-# --- 脚本主体 ---
-#################################
 
 workdir: OUT_DIR
 

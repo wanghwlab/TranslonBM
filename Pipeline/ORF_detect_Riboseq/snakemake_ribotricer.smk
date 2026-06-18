@@ -3,10 +3,6 @@
 import os
 import pandas as pd 
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
-
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_specific.tsv"
 
 try:
@@ -19,18 +15,12 @@ MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 
 RIBOTRICER_ENV = "ribotricer_env"
 
-#################################
-# 2. 路径定义
-#################################
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/ribotricer"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_chrN"
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
 FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/scripts"
 
-#################################
-# --- 脚本主体 ---
-#################################
 
 workdir: OUT_DIR
 

@@ -3,9 +3,6 @@ import os
 import pandas as pd 
 import glob 
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_specific.tsv"
 
 try:
@@ -17,19 +14,11 @@ SPE = 'Human'
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 RIBORFSCRIPTS_DIR = '/home/tangyuewen/software/RibORF.2.0'
 
-
-#################################
-# 2. 路径定义
-#################################
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/riborf"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_chrN"
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
 FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/scripts"
-
-#################################
-# --- 脚本主体 ---
-#################################
 
 workdir: OUT_DIR
 
@@ -68,7 +57,7 @@ rule riborf_index:
     -t {input.gpd} \
     -o {params.riborf_index} \
     -s ATG\/CTG\/GTG\/TTG \
-    -l 27
+    -l 24
     '''
 
 rule riborf_convert_to_sam_chrN:
@@ -76,7 +65,7 @@ rule riborf_convert_to_sam_chrN:
     ribo_bam = os.path.join(BAM_DIR, '{sample}_{mpsf}.bam')
   output:
     ribo_sam = temp('riborf_chrN/temp_sam/{sample}_{mpsf}.sam') 
-  threads: 8
+  threads: 1
   conda:'base'
   shell:
     r'''samtools view -@ {threads} {input.ribo_bam} -h -o {output.ribo_sam}'''
@@ -86,7 +75,7 @@ rule generate_bam_stats:
     bam = os.path.join(BAM_DIR, '{sample}_{mpsf}.bam')
   output:
     stats = os.path.join(BAM_DIR, '{sample}_{mpsf}.stats')
-  threads: 8 
+  threads: 1 
   conda:'base'
   shell:
     r'''samtools stats -@ {threads} {input.bam} > {output.stats}'''
@@ -190,7 +179,7 @@ rule riborf_pred_chrN_default:
     -f {input.corrected_sam} \
     -c {input.can_orf} \
     -o {params.pred_out_prefix} \
-    -l 27 \
+    -l 24 \
     -r 11 \
     -p 0.7
     '''

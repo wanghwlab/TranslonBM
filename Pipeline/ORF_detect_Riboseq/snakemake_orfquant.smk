@@ -3,9 +3,6 @@
 import os
 import pandas as pd 
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_specific.tsv"
 
 try:
@@ -21,9 +18,6 @@ ANNO_NAME_LIST = ['gencodev43', 'gencodevM32', 'GRCz11104']
 RIBOSEQ_ENV = 'riboseqc_env'
 ORFQUANT_ENV = 'orfquant_env'
 
-#################################
-# 2. 路径定义
-#################################
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/orfquant"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_chrN"
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
@@ -39,10 +33,6 @@ if SPE == 'Human':
 else:
     print('please check whether the right scientific name in this snakefile!!!')
     os._exit(1)
-
-#################################
-# --- 脚本主体 ---
-#################################
 
 workdir: OUT_DIR
 
@@ -84,7 +74,7 @@ rule adjust_mapq_tophat2:
     adjusted_bam = 'merge_chrN/{sample}_tophat2_mapq_adjust.bam',
     bed = temp('merge_chrN/{sample}_tophat2.bed') 
   conda: 'base'
-  threads: 6
+  threads: 1
   script:
     os.path.join(SCRIPTS_DIR, 'adjust_mapq.sh')
 
@@ -96,7 +86,7 @@ rule adjust_mapq_others:
     wildcard_constraints:
         mpsf="STAR|hisat2"
     conda: 'py3.7'
-    threads: 6
+    threads: 1
     shell: r'''~/miniconda3/bin/samtools view -@ 6 -bh -o {output.adjusted_bam} {input.raw_bam}'''
 
 

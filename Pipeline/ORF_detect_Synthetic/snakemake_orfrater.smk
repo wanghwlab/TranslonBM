@@ -3,9 +3,6 @@
 import os
 import pandas as pd # 新增: 导入pandas库
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_simu.tsv"
 
 try:
@@ -18,9 +15,6 @@ MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 
 ORFRATER_ENV = "python27"
 
-#################################
-# 2. 路径定义
-#################################
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_simu/orfrater"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping/simulation"
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
@@ -28,9 +22,6 @@ FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect_simu/scripts"
 ORFRATER_DIR = '/home/tangyuewen/ORF_benchmark/Ref/ORFtools/ORF-RATER'
 
-#################################
-# --- 脚本主体 ---
-#################################
 workdir: OUT_DIR
 
 rule all:

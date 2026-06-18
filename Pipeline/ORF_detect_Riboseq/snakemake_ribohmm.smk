@@ -4,9 +4,6 @@ import os
 import pandas as pd
 import glob
 
-#################################
-# 1. 设置全局参数和样本列表
-#################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_match.tsv"
 try:
     SAMPLES_DF = pd.read_csv(SAMPLE_SHEET, sep="\t").set_index("ribo_sample", drop=False)
@@ -20,9 +17,6 @@ MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 READ_LENGTHS = ['28','29','30','31']
 RIBOHMM_ENV = "riboHMM"
 
-#################################
-# 2. 路径定义
-#################################
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/ribohmm_match"
 RIBO_BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_chrN"
 RNA_BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.5/Mapping/rnamerge_chrN"
@@ -32,9 +26,6 @@ SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/sc
 RIBOHMM_SRC_DIR = '/home/tangyuewen/ORF_benchmark/Ref/ORFtools/Ribohmm/scripts/riboHMM-py3'
 MAPPABILITY_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/ribohmm/mappability"
 
-#################################
-# --- 脚本主体 ---
-#################################
 
 workdir: OUT_DIR
 

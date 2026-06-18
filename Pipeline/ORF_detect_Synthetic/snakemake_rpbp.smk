@@ -1,10 +1,6 @@
 import pandas as pd
 import os
 
-#################################
-# 1. 设置全局参数和样本列表 (Global Configuration)
-#################################
-
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_simu.tsv"
 TEMPLATE_YAML = "/home/tangyuewen/ORF_benchmark/Ref/ORFtools/rpbp/Human.alignments-only.yaml"
 PREPARE_GENOME_YAML = "/home/tangyuewen/ORF_benchmark/Ref/ORFtools/rpbp/prepare_genome.yaml"
@@ -19,9 +15,7 @@ SPE = 'Human'
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 GENOME_NAME = "GRCh38"
 
-#################################
-# 2. 路径定义 (Path Definitions)
-#################################
+
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_simu/rpbp"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping/simulation"
 GTF_FILE = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.no_underscores.gtf"
@@ -35,10 +29,6 @@ PLACEHOLDER_GTF = "/home/chengennong/Ribo_benchmark/ref/Human/gencode.v43.annota
 PLACEHOLDER_FASTA = "/home/chengennong/Ribo_benchmark/ref/Human/GRCh38.primary_assembly.genome.fa"
 PLACEHOLDER_RIBOSEQ_DATA = "/path/to/your/c-elegans-example"
 
-
-#################################
-# 3. Snakemake 工作流主体
-#################################
 
 workdir: OUT_DIR
 

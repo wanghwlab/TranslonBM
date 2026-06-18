@@ -2,9 +2,6 @@
 import pandas as pd
 import os
 
-#################################
-# 1. 设置全局参数和样本列表 (Global Configuration)
-#################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_rpbp.tsv"
 TEMPLATE_YAML = "/home/tangyuewen/ORF_benchmark/Ref/ORFtools/rpbp/Human.alignments-only.yaml"
 PREPARE_GENOME_YAML = "/home/tangyuewen/ORF_benchmark/Ref/ORFtools/rpbp/prepare_genome.yaml"
@@ -19,9 +16,7 @@ SPE = 'Human'
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 GENOME_NAME = "GRCh38"
 
-#################################
-# 2. 路径定义 (Path Definitions)
-#################################
+
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_copy/rpbp"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_chrN"
 GTF_FILE = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.no_underscores.gtf"
@@ -34,11 +29,6 @@ PLACEHOLDER_GTF = "/home/chengennong/Ribo_benchmark/ref/Human/gencode.v43.annota
 PLACEHOLDER_FASTA = "/home/chengennong/Ribo_benchmark/ref/Human/GRCh38.primary_assembly.genome.fa"
 PLACEHOLDER_RIBOSEQ_DATA = "/path/to/your/c-elegans-example"
 
-
-#################################
-# 3. Snakemake 工作流主体
-#################################
-
 workdir: OUT_DIR
 
 rule all:
@@ -49,23 +39,23 @@ rule all:
     expand('rpbp_chrN/orf_pred_default/{sample}_{mpsf}/orf-predictions/{sample}_{mpsf}_rpbp_filtered.txt', sample=SAMPLES, mpsf=MAPPING_SOFTWARE),
     expand('orf_result/raw_prediction_result_default/{sample}_{mpsf}_Rp-Bp_raw.txt', sample=SAMPLES, mpsf=MAPPING_SOFTWARE)
 	
-rule prepare_genome_indices:
-    input:
-        config = PREPARE_GENOME_YAML,
-        gtf = GTF_FILE,
-        fasta = FASTA_FILE
-    output:
-        annotated_bed = os.path.join(GENOME_BASE_PATH, f"{GENOME_NAME}.annotated.bed.gz")
-    benchmark:
-        os.path.join(BENCHMARK_DIR, "prepare_genome_indices/prepare_genome.txt")
-    log:
-        os.path.join(OUT_DIR, "logs/prepare_genome.log")
-    conda:'rpbp_env'
-    threads: 1 
-    shell:
-        # --overwrite 确保可以覆盖不完整的文件
-        #"prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --overwrite"
-        "prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --mem 32G"
+#rule prepare_genome_indices:
+#    input:
+#        config = PREPARE_GENOME_YAML,
+#        gtf = GTF_FILE,
+#        fasta = FASTA_FILE
+#    output:
+#        annotated_bed = os.path.join(GENOME_BASE_PATH, f"{GENOME_NAME}.annotated.bed.gz")
+#    benchmark:
+#        os.path.join(BENCHMARK_DIR, "prepare_genome_indices/prepare_genome.txt")
+#    log:
+#        os.path.join(OUT_DIR, "logs/prepare_genome.log")
+#    conda:'rpbp_env'
+#    threads: 1 
+#    shell:
+#        # --overwrite 确保可以覆盖不完整的文件
+#        #"prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --overwrite"
+#        "prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --mem 32G"
 
 rule create_default_yaml:
   input:
