@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 
-# 1. 定义数据集、比对软件和ORF预测软件
 datasets = [
     "SRX876063_SRX876069", "SRX740748", "SRX1254413", 
     "SRX5256543_SRX5256555", "SRX5887328_SRX5887329_SRX5887330", 
@@ -13,7 +12,6 @@ tools = [
     "ribowave", "orfrater", "orfquant", "gedi", "ribotaper", "rpbp"
 ]
 
-# 2. 定义文件路径
 overlap_dir = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/tools_overlap/merged_ATG/orf_pred_default_untrim/"
 pred_dir = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/orf_pred_default_untrim/"
 output_csv = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/1tools_percent/1_tools_proportion_summary_real_untrim.csv"
@@ -22,7 +20,6 @@ results_list = []
 
 print("开始统计 1_tools 的软件来源比例...")
 
-# 3. 遍历所有数据集和比对软件的组合
 for ds in datasets:
     for al in aligners:
         overlap_file = os.path.join(overlap_dir, f"{ds}_{al}_overlap_count.txt")
@@ -56,7 +53,6 @@ for ds in datasets:
             results_list.append(row_data)
             continue
             
-        # 4. 遍历 11 种 ORF 预测软件，寻找交集
         for tool in tools:
             pred_file = os.path.join(pred_dir, f"{ds}_{al}_{tool}_gcoor.tsv.gz")
             
@@ -80,7 +76,6 @@ for ds in datasets:
             
         results_list.append(row_data)
 
-# 5. 将结果保存为 CSV
 df_results = pd.DataFrame(results_list)
 df_results.to_csv(output_csv, index=False)
 
