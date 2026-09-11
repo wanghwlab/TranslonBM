@@ -4,14 +4,14 @@ library(RColorBrewer)
 library(cowplot)
 
 # ==============================================================================
-# 1. 设置文件路径
+# 1. Set file paths
 # ==============================================================================
 rld_file <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/merged_RLD_stats_final.csv"
 offset_file <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/merged_offsets_all.csv"
 output_pdf <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/rld_offsets_chrN_simu_untrim.pdf"
 
 # ==============================================================================
-# 2. 读取并处理 RLD 数据
+# 2. Read and process RLD data
 # ==============================================================================
 rld_data <- read_csv(rld_file, show_col_types = FALSE) %>%
   rename(mapping_software = ORFtools, samples = sample) %>% 
@@ -23,7 +23,7 @@ rld_data <- read_csv(rld_file, show_col_types = FALSE) %>%
   filter(between(read_length, 25, 35))
 
 # ==============================================================================
-# 3. 读取并处理 Offset 数据 
+# 3. Read and process offset data
 # ==============================================================================
 offset_data_raw <- read_csv(offset_file, show_col_types = FALSE)
 
@@ -37,7 +37,7 @@ print("Data Split Check:")
 print(head(offset_data))
 
 # ==============================================================================
-# 4. 合并数据
+# 4. Merge data
 # ==============================================================================
 full_data <- full_join(
   rld_data,
@@ -52,13 +52,13 @@ full_data <- full_join(
   filter(!is.na(psite_software)) 
 
 # ==============================================================================
-# 5. 设置因子水平 
+# 5. Set factor levels
 # ==============================================================================
-# 1. Mapping 顺序
+# 1. Mapping order
 full_data <- full_data %>%
   mutate(mapping_software = factor(mapping_software, levels = c("STAR", "hisat2", "tophat2")))
 
-# 2. P-site Software 顺序
+# 2. P-site Software order
 psite_levels <- c(
   "plastid", "shoelaces", "ribowaltz", "riboseqc", 
   "price", "ribocode", "ribotish", "ribotricer", 
@@ -72,7 +72,7 @@ full_data <- full_data %>%
   mutate(pipeline = factor(pipeline, levels = unique(pipeline) %>% rev()))
 
 # ==============================================================================
-# 6. 绘图函数 
+# 6. Plotting function
 # ==============================================================================
 plot_rld_offset <- function(df, aes_x, aes_y, aes_fill, text_para, label_para) {
   
@@ -107,12 +107,12 @@ plot_rld_offset <- function(df, aes_x, aes_y, aes_fill, text_para, label_para) {
       axis.text.x = element_text(color = "black", size = 10),
       axis.text.y = element_text(color = "black", size = 10),
       strip.background = element_blank(),
-      strip.text = element_text(size = 11, color = "black", face = "bold") # 移除 family
+      strip.text = element_text(size = 11, color = "black", face = "bold") # Remove family
     )
 }
 
 # ==============================================================================
-# 7. 生成并保存
+# 7. Generate and save
 # ==============================================================================
 
 p <- plot_rld_offset(

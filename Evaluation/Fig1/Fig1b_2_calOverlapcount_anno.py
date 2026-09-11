@@ -5,11 +5,11 @@ import pandas as pd
 import os
 import glob
 
-# Step 1: 设置输入和输出目录
+# Step 1: Set input and output directories
 input_dir = '/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_canonical_ATG/orf_pred_default_trim'
 output_dir = '/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/tools_overlap/merged_canonical_ATG/orf_pred_default_trim'
 
-# Step 2: 定义需要处理的文件模式列表
+# Step 2: Define the list of file patterns to process
 file_patterns = [
 {"prefix": "SRX11812007_SRX11812008_SRX11812009_hisat2", "pattern": "SRX11812007_SRX11812008_SRX11812009_hisat2*gcoor.tsv.gz"},
 {"prefix": "SRX11812007_SRX11812008_SRX11812009_STAR", "pattern": "SRX11812007_SRX11812008_SRX11812009_STAR*gcoor.tsv.gz"},
@@ -47,7 +47,7 @@ file_patterns = [
 column_names = ['gene_id', 'coordinate_id', 'chrom', 'coordinate_0base', 'strand', 
                 'ORF_sequence_correct', 'start_codon', 'ORF_sequence_aa']
 
-# Step 3: 遍历文件模式进行处理
+# Step 3: Process each file pattern
 for file_config in file_patterns:
     prefix = file_config["prefix"]
     file_pattern = file_config["pattern"]
@@ -59,17 +59,17 @@ for file_config in file_patterns:
 
     print(f"Processing files for prefix: {prefix}")
 
-    # 保存每个文件的唯一前四列数据（去重列：coordinate_id, chrom, coordinate_0base, strand）
+    # Store the unique first four columns from each file (deduplication columns: coordinate_id, chrom, coordinate_0base, strand)
     unique_dataframes = []
 
     for file in files:
-        # Step 4: 读取文件，读取需要的列：coordinate_id, chrom, coordinate_0base, strand, start_codon
+        # Step 4: Read the required columns: coordinate_id, chrom, coordinate_0base, strand, and start_codon
         df = pd.read_csv(file, sep='\t', compression='gzip', header=None, names=column_names,
                          usecols=['coordinate_id', 'chrom', 'coordinate_0base', 'strand', 'start_codon'])
         df_unique = df[['coordinate_id', 'chrom', 'coordinate_0base', 'strand']].drop_duplicates()
         unique_dataframes.append(df_unique)
 
-    # Step 5: 合并所有文件四列并直接统计重复次数
+    # Step 5: Merge the four columns from all files and count duplicate occurrences
     combined_df = pd.concat(unique_dataframes)
     overlap_count = combined_df.value_counts().reset_index(name='count')
     overlap_count.columns = ['coordinate_id', 'chrom', 'coordinate_0base', 'strand', 'count']
@@ -80,7 +80,7 @@ for file_config in file_patterns:
     overlap_file = os.path.join(output_dir, f'{prefix}_overlap_count.txt')
     overlap_count.to_csv(overlap_file, sep='\t', index=False)
 
-    # Step 6: 对每个文件统计重复情况
+    # Step 6: Count duplicate occurrences for each file
     result = {}
     tools_range = range(1, overlap_count['count'].max() + 1)
 

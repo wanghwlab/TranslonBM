@@ -102,7 +102,7 @@ for (current_type in dataset_types) {
     type_data <- plot_ready_data %>% filter(dataset_type == current_type)
     if (nrow(type_data) == 0) next
     
-    # 保存 CSV
+    # Save CSV
     csv_filename <- paste0("ORFdetector_resources_", current_type, ".csv")
     data_to_save <- type_data %>%
         select(study_name, sample, aligner, software, max_rss_GiB, elapsed_time, `uss/rss`, cpu_load_ave, max_rss, s, cpu_time)

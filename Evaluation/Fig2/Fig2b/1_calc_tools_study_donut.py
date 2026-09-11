@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# --- 1. 配置区域 ---
+# --- 1. Configuration ---
 INPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/tools_overlap/merged_ATG/orf_pred_default_untrim/"
 OUTPUT_CSV = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/overlap_summary_stats_real_untrim.csv"
 OUTPUT_PDF = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/overlap_donut_charts_real_untrim.pdf"
@@ -26,16 +26,16 @@ ALIGNERS = ['hisat2', 'STAR', 'tophat2']
 COLORS = plt.cm.tab20(np.linspace(0, 1, 10))
 
 
-# --- 2. 数据收集与统计 ---
+# --- 2. Data collection and statistics ---
 def collect_data(input_dir):
-    print("开始读取和统计数据...")
+    print("Reading and summarizing data...")
     all_stats = []
     
     file_pattern = os.path.join(input_dir, "*_overlap_count.txt")
     files = glob.glob(file_pattern)
     
     if not files:
-        print(f"警告：在 {input_dir} 未找到任何 .txt 文件！")
+        print(f"Warning: no .txt files were found in {input_dir}!")
         return pd.DataFrame()
 
     for file in files:
@@ -70,15 +70,15 @@ def collect_data(input_dir):
             all_stats.append(row)
             
         except Exception as e:
-            print(f"读取文件出错 {filename}: {e}")
+            print(f"Error reading file {filename}: {e}")
 
     df_stats = pd.DataFrame(all_stats)
     return df_stats
 
 
-# --- 3. 绘图函数 ---
+# --- 3. Plotting function ---
 def plot_nested_donuts(df_stats, output_pdf):
-    print("开始绘制环形饼图...")
+    print("Drawing the donut chart...")
     
     datasets = df_stats['Author_Year'].unique()
     num_datasets = len(datasets)
@@ -154,24 +154,24 @@ def plot_nested_donuts(df_stats, output_pdf):
     
     plt.savefig(output_pdf, format='pdf', dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"饼状图已保存至 {output_pdf}")
+    print(f"Chart saved to {output_pdf}")
 
 
-# --- 4. 主函数 ---
+# --- 4. Main function ---
 def main():
-    # 1. 提取并统计数据
+    # 1. Extract and summarize data
     df_stats = collect_data(INPUT_DIR)
     
     if df_stats.empty:
         return
 
-    # 2. 保存 CSV
+    # 2. Save CSV
     df_stats.to_csv(OUTPUT_CSV, index=False)
-    print(f"统计数据已保存至 {OUTPUT_CSV}")
+    print(f"Summary data saved to {OUTPUT_CSV}")
     
-    # 3. 绘制环形图并保存为 PDF
+    # 3. Draw the donut chart and save it as PDF
     plot_nested_donuts(df_stats, OUTPUT_PDF)
-    print("任务完成！")
+    print("Task completed!")
 
 if __name__ == "__main__":
     main()

@@ -155,7 +155,7 @@ def read_one_level(config):
     required_cols = {"sample", "soft", "tools", "precision", "recall"}
     missing = required_cols - set(df.columns)
     if missing:
-        raise ValueError(f"{input_csv} 缺少必要列: {missing}")
+        raise ValueError(f"{input_csv} is missing required columns: {missing}")
 
     df = df.copy()
     df["level"] = level
@@ -311,7 +311,7 @@ def plot_precision_recall(summary_df):
                     zorder=2,
                 )
 
-                # 散点去除黑色边框
+                # Remove black borders from scatter points
                 ax.scatter(
                     x,
                     y,

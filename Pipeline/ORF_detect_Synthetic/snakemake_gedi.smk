@@ -1,7 +1,7 @@
-# snakefile_gedi.smk (方案二：集成化工作流版本)
+# snakefile_gedi.smk (Option 2: integrated workflow version)
 
 import os
-import pandas as pd # 新增: 导入pandas库
+import pandas as pd # Added: import pandas
 
 
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_simu_6M.tsv"
@@ -9,7 +9,7 @@ SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/c
 try:
     SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t")['sample'].tolist()
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含一个名为 'sample' 的列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains a column named 'sample'. Error: {e}")
 
 SPE = 'Human'
 MAPPING_SOFTWARE = ['hisat2', 'STAR', 'tophat2']

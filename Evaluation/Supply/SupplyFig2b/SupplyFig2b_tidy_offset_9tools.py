@@ -4,15 +4,15 @@ import os
 import re
 import csv
 
-# ================= 配置区域 =================
+# ================= Configuration =================
 INPUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_simu_untrim"
 BASE_DIR = '/home/tangyuewen/ORF_benchmark/rerun_2025.9/' 
 OUTPUT_FILE = os.path.join(BASE_DIR, "plots/offset_plots_simu/merged_offsets_all.csv")
 
-# ================= 工具处理函数 =================
+# ================= Tool-processing functions =================
 def get_tool_name_from_path(file_path, root_dir):
     """
-    从路径中动态提取工具名称
+    Extract the tool name dynamically from the path
     """
     try:
         rel_path = os.path.relpath(file_path, root_dir)
@@ -23,14 +23,14 @@ def get_tool_name_from_path(file_path, root_dir):
 
 def get_generic_offsets():
     """
-    [1] 通用格式软件 (Standard Offsets)
-    包括: orfquant, price, ribotish, ribotaper 等
-    匹配: *_standard_offsets.txt
+    [1] Tools with the standard format (Standard Offsets)
+    including: orfquant, price, ribotish, ribotaper and others
+    pattern: *_standard_offsets.txt
     """
-    print(f"\n[1/6] 正在搜索通用格式软件 (Standard Offsets)...")
+    print(f"\n[1/6] Searching for tools with the standard format (Standard Offsets)...")
     search_pattern = os.path.join(INPUT_DIR, "*", "*chrN", "P_site_determination", "*", "*_standard_offsets.txt")
     files = glob.glob(search_pattern)
-    print(f"   - 找到 {len(files)} 个文件")
+    print(f"   - Found {len(files)} files")
     
     data_list = []
     for file_path in files:
@@ -45,7 +45,7 @@ def get_generic_offsets():
             df['ORFtools'] = orf_tool
             data_list.append(df)
         except Exception as e:
-            print(f"   ! 错误: {file_path} -> {e}")
+            print(f"   ! Error: {file_path} -> {e}")
             
     return pd.concat(data_list, ignore_index=True) if data_list else pd.DataFrame()
 
@@ -53,12 +53,12 @@ def get_generic_offsets():
 def get_ribotricer_offsets():
     """
     [2] Ribotricer
-    逻辑: offset = 12 + lag
+    Logic: offset = 12 + lag
     """
-    print("\n[2/6] 正在处理 Ribotricer...")
+    print("\n[2/6] Processing Ribotricer...")
     input_pattern = os.path.join(INPUT_DIR, "ribotricer", "ribotricer_chrN", "orf_pred_default", "*", "*_psite_offsets.txt")
     files = glob.glob(input_pattern)
-    print(f"   - 找到 {len(files)} 个文件")
+    print(f"   - Found {len(files)} files")
     
     DEFAULT_BASE_OFFSET = 12 
     rows = []
@@ -91,7 +91,7 @@ def get_ribotricer_offsets():
                         'read_length': read_len, 'offset': DEFAULT_BASE_OFFSET + lag
                     })
         except Exception as e:
-            print(f"   ! 错误: {filename} -> {e}")
+            print(f"   ! Error: {filename} -> {e}")
             
     return pd.DataFrame(rows)
 
@@ -99,12 +99,12 @@ def get_ribotricer_offsets():
 def get_ribocode_offsets():
     """
     [3] Ribocode
-    解析: _pre_config.txt
+    Parse: _pre_config.txt
     """
-    print("\n[3/6] 正在处理 Ribocode...")
+    print("\n[3/6] Processing RiboCode...")
     input_pattern = os.path.join(INPUT_DIR, "ribocode", "ribocode_chrN", "P_site_determination", "SR*", "SRX*_pre_config.txt")
     files = glob.glob(input_pattern)
-    print(f"   - 找到 {len(files)} 个文件")
+    print(f"   - Found {len(files)} files")
     
     rows = []
     for file_path in files:
@@ -132,7 +132,7 @@ def get_ribocode_offsets():
                                 'read_length': int(l), 'offset': int(o)
                             })
         except Exception as e:
-            print(f"   ! 错误: {file_path} -> {e}")
+            print(f"   ! Error: {file_path} -> {e}")
             
     return pd.DataFrame(rows)
 
@@ -140,12 +140,12 @@ def get_ribocode_offsets():
 def get_ribowave_offsets():
     """
     [4] Ribowave
-    逻辑: offset = Position - 1
+    Logic: offset = Position - 1
     """
-    print("\n[4/6] 正在处理 Ribowave...")
+    print("\n[4/6] Processing RiboWave...")
     input_pattern = os.path.join(INPUT_DIR, "ribowave", "ribowave_chrN", "orf_pred_default", "*", "P-site", "*.psite1nt.txt")
     files = glob.glob(input_pattern)
-    print(f"   - 找到 {len(files)} 个文件")
+    print(f"   - Found {len(files)} files")
     
     rows = []
     for file_path in files:
@@ -166,7 +166,7 @@ def get_ribowave_offsets():
                         except ValueError:
                             pass
         except Exception as e:
-            print(f"   ! 错误: {file_path} -> {e}")
+            print(f"   ! Error: {file_path} -> {e}")
             
     return pd.DataFrame(rows)
 
@@ -174,12 +174,12 @@ def get_ribowave_offsets():
 def get_rpbp_offsets():
     """
     [5] Rpbp
-    解析: 文件名中的 length-X.offset-Y
+    Parse: from the file name length-X.offset-Y
     """
-    print("\n[5/6] 正在处理 Rpbp...")
+    print("\n[5/6] Processing Rp-Bp...")
     search_path = os.path.join(INPUT_DIR, "rpbp", "rpbp_chrN", "orf_pred_default", "S*", "orf-profiles", "*.profiles.mtx.gz")
     files = glob.glob(search_path)
-    print(f"   - 找到 {len(files)} 个文件")
+    print(f"   - Found {len(files)} files")
     
     rows = []
     pattern = re.compile(r"^(.*?)\.length-([\d-]+)\.offset-([\d-]+)\.profiles\.mtx\.gz$")
@@ -204,16 +204,16 @@ def get_rpbp_offsets():
 
 def get_ribohmm_offsets():
     """
-    [6] Ribohmm (固定值生成)
-    逻辑: 扫描目录获取 Sample -> 生成固定 (28,29,30,31 -> 12)
+    [6] Ribohmm (generate fixed values)
+    Logic: scan directories for samples and generate fixed values (28,29,30,31 -> 12)
     """
-    print("\n[6/6] 正在处理 Ribohmm (固定值生成)...")
+    print("\n[6/6] Processing RiboHMM (generate fixed values)...")
     
     sample_search_pattern = os.path.join(INPUT_DIR, "ribohmm", "ribohmm_chrN", "ORF_detecting_default", "*")
     sample_dirs = glob.glob(sample_search_pattern)
     sample_names = [os.path.basename(d) for d in sample_dirs if os.path.isdir(d)]
     
-    print(f"   - 找到 {len(sample_names)} 个 Ribohmm 样本: {sample_names[:3]} ...")
+    print(f"   - Found {len(sample_names)} RiboHMM samples: {sample_names[:3]} ...")
     
     rows = []
     fixed_lengths = [28, 29, 30, 31]
@@ -231,10 +231,10 @@ def get_ribohmm_offsets():
     return pd.DataFrame(rows)
 
 
-# ================= 主程序执行 =================
+# ================= Main program =================
 def main():
     if not os.path.exists(INPUT_DIR):
-        print(f"严重错误: 输入目录不存在 -> {INPUT_DIR}")
+        print(f"Fatal error: input directory does not exist -> {INPUT_DIR}")
         return
 
     all_dfs = []
@@ -246,7 +246,7 @@ def main():
     all_dfs.append(get_rpbp_offsets())
     all_dfs.append(get_ribohmm_offsets())
     
-    print("\n正在合并所有数据...")
+    print("\nMerging all data...")
     if any(not df.empty for df in all_dfs):
         final_df = pd.concat(all_dfs, ignore_index=True)
         
@@ -262,17 +262,17 @@ def main():
         final_df.to_csv(OUTPUT_FILE, index=False)
         
         print("=" * 40)
-        print(f"全部完成！")
-        print(f"数据来源: {INPUT_DIR}")
-        print(f"总行数: {len(final_df)}")
-        print(f"包含工具: {final_df['ORFtools'].unique()}")
-        print(f"结果已保存至: {os.path.abspath(OUTPUT_FILE)}")
+        print(f"All tasks completed!")
+        print(f"Data source: {INPUT_DIR}")
+        print(f"Total rows: {len(final_df)}")
+        print(f"Tools included: {final_df['ORFtools'].unique()}")
+        print(f"Results saved to: {os.path.abspath(OUTPUT_FILE)}")
         print("=" * 40)
         
-        print("\n数据预览 (Top 5):")
+        print("\nData preview (Top 5):")
         print(final_df.head().to_string(index=False))
     else:
-        print("错误: 未提取到任何数据，请检查路径是否正确。")
+        print("Error: no data were extracted; check the path.")
 
 if __name__ == "__main__":
     main()

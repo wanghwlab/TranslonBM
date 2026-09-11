@@ -1,6 +1,6 @@
 import os
 
-# ================= 变量定义区域 =================
+# ================= Variable definitions =================
 SAMPLES = [
     "simulation_6M_T1",
     "simulation_6M_T3",
@@ -11,7 +11,7 @@ SAMPLES = [
 MERGE = SAMPLES
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 
-# 路径配置
+# Path configuration
 FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 GPPY_PATH = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_reformat/scripts/gtf.py"
 REF_GTF_FOR_GPPY = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
@@ -24,7 +24,7 @@ SCRIPT_CONVERT = "./scripts/ORFquant_convert.R"
 SCRIPT_GTF = "./scripts/gtf.py"
 SCRIPT_MERGE = "./scripts/ORFquant_ORFmerge.R"
 
-# ================= 规则定义区域 =================
+# ================= Rule definitions =================
 
 rule all:
   input:
@@ -91,7 +91,7 @@ rule gedi_ORFmerge:
         merged_ORF = 'final_ORFs/orf_pred_default/{merge}_{mpsf}_gedi_merged_gcoor.tsv.gz'
     conda:'r_deseq2'
     threads:24
-    shell:  # 注意这里由 script 改为了 shell
+    shell:  # This directive was changed from script to shell
         '''
         Rscript /home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_reformat/scripts/gedi_ORFmerge.R \
         {input.addchr_bed} \
@@ -181,9 +181,9 @@ rule ribowave_convert:
     threads:24
     script:
         'scripts/ribowave_convert.R'
-#    shell:  # 注意：这里改成了 shell
+#    shell:  # This directive was changed to shell
 #        '''
-#        # 显式创建目录，防止 R 脚本因为目录不存在而失败
+#        # Create the directory explicitly so the R script does not fail when it is absent
 #        mkdir -p $(dirname {output.gppy})
 #        
 #        Rscript /home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_reformat/scripts/ribowave_convert.R \

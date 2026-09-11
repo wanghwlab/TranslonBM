@@ -4,7 +4,7 @@ import os
 import pandas as pd 
 
 #################################
-# 1. 设置全局参数和样本列表
+# 1. Define global parameters and the sample list
 #################################
 SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/configs/sample_names_simu.tsv"
 
@@ -12,16 +12,16 @@ try:
     #SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t").sample.tolist()
     SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t")['sample'].tolist()
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含一个名为 'sample' 的列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains a column named 'sample'. Error: {e}")
 
 
 SPE = 'Human'
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
 
 #################################
-# 2. 路径定义 
+# 2. Path definitions
 #################################
-# 输出目录
+# Output directory
 OUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect_simu/ribocode"
 BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping/simulation_Tx"
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
@@ -29,7 +29,7 @@ FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 RIBOCODE_BIN_PATH = "~/miniconda3/envs/ribocode_env/bin/"
 
 #################################
-# --- 脚本主体 ---
+# --- Main workflow ---
 #################################
 
 workdir: OUT_DIR

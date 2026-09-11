@@ -12,11 +12,11 @@ matplotlib.use('Agg')
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
-# --- 配置区 ---
+# --- Configuration ---
 INPUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_canonical_ATG/orf_pred_default_untrim/"
 OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/Jaccard_Heatmaps/merged_canonical_ATG/orf_pred_default_untrim/"
 
-# 数据集顺序配置
+# Dataset order
 MANUAL_ORDER_REAL = [
     "SRX876063", "SRX740748", "SRX1254413",
     "SRX5256543", "SRX5887328", "SRX11812007",
@@ -31,7 +31,7 @@ MANUAL_ORDER_SIMULATION = [
 ]
 
 COLORMAP = "YlGnBu"
-# 工具顺序
+# Tool order
 MANUAL_TOOL_ORDER = ['ribohmm', 'rpbp', 'orfrater', 'gedi', 'ORFquant', 'ribotricer', 'ribotish', 'ribotaper', 'ribocode', 'riborf', 'ribowave']
 
 NAME_MAPPING = {
@@ -44,10 +44,10 @@ NAME_MAPPING = {
     "SRX11812007": "Chothani et al.(2022)",
 }
 
-# --- 核心函数 ---
+# --- Core functions ---
 
 def parse_filename(filepath):
-    """从文件名解析出 sample, aligner, tool。"""
+    """Parse sample, aligner, and tool from the file name."""
     base = os.path.basename(filepath).replace('_gcoor.tsv.gz', '')
     parts = base.split('_')
     if len(parts) >= 3:
@@ -56,7 +56,7 @@ def parse_filename(filepath):
     return None, None, None
 
 def calculate_jaccard_matrix(orf_sets):
-    """计算Jaccard矩阵。"""
+    """Calculate the Jaccard matrix."""
     tools = [tool for tool in MANUAL_TOOL_ORDER if tool in orf_sets]
     if len(tools) < 2: return None
     matrix = pd.DataFrame(1.0, index=tools, columns=tools)
@@ -80,7 +80,7 @@ def get_display_name(sample_name, name_mapping):
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    print("--- 正在预加载所有ORF数据... ---")
+    print("--- Preloading all ORF data... ---")
     all_orf_data = {}
     all_files = glob.glob(os.path.join(INPUT_DIR, "*_gcoor.tsv.gz"))
     
@@ -129,9 +129,9 @@ def main():
                 orf_set = {tuple(row) for row in df.itertuples(index=False, name=None)}
                 all_orf_data[(sample, aligner, tool)] = orf_set
             except Exception as e2:
-                print(f"  [错误] 读取文件 {f} 失败: {e2}")
+                print(f"  [Error] Reading file {f} failed: {e2}")
         except Exception as e:
-            print(f"  [错误] 读取文件 {f} 失败: {e}")
+            print(f"  [Error] Reading file {f} failed: {e}")
 
     all_aligners = sorted(list(set(k[1] for k in all_orf_data.keys())))
     all_samples_found = sorted(list(set(k[0] for k in all_orf_data.keys())))
@@ -153,7 +153,7 @@ def main():
             
             if not samples_to_plot: continue
             
-            print(f"\n--- 正在处理: Aligner='{aligner}', Dataset='{group_name}' ---")
+            print(f"\n--- Processing: Aligner='{aligner}', Dataset='{group_name}' ---")
             
             num_samples = len(samples_to_plot)
             ncols = 4
@@ -186,11 +186,11 @@ def main():
 
             plt.tight_layout(rect=[0, 0, 1, 0.96])
             output_filename = os.path.join(OUTPUT_DIR, f"jaccard_{aligner}_{group_name}.pdf")
-            print(f"--- 保存整合图: {output_filename} ---")
+            print(f"--- Saving combined plot: {output_filename} ---")
             plt.savefig(output_filename, format='pdf', bbox_inches='tight')
             plt.close(fig)
 
-    print("\n所有任务已完成！")
+    print("\nAll tasks completed!")
 
 if __name__ == '__main__':
     main()

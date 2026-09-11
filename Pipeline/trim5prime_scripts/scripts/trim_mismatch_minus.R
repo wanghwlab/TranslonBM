@@ -67,19 +67,19 @@ trim_mismatch_minus <- function(fq_minus, trimmed_fq_minus) {
 #)
 
 
-# 获取所有minus.fq文件
+# Get all minus.fq files
 input_files <- list.files("trim_five_prime_mismatch", pattern = "*minus.fq", full.names = TRUE)
 for(input_file in input_files) {
-  # 从文件名提取merge和mpsf
+  # Extract merge and mpsf from the file name
   filename <- basename(input_file)
   parts <- strsplit(sub("_minus.fq", "", filename), "_")[[1]]
   merge <- paste(parts[1:(length(parts)-1)], collapse = "_")
   mpsf <- parts[length(parts)]
 
-  # 构建输出文件名
+  # Construct the output file name
   output_file <- file.path("trim_five_prime_mismatch", paste0(merge, "_", mpsf, "_minus_trimmed.fq"))
 
-  # 调用处理函数
+  # Call the processing function
   trim_mismatch_minus(
     fq_minus = input_file,
     trimmed_fq_minus = output_file

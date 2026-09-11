@@ -36,7 +36,7 @@ NUM_PROCESSES = 32
 ANNOTATED_CDS_SET = set()
 
 def normalize_coords_string(coords_str: str) -> str:
-    """將坐標字符串標準化（按起始位置排序），確保能夠精準匹配 Block。"""
+    """Normalize coordinate strings by start position to ensure exact block matching."""
     try:
         blocks = coords_str.strip().split(',')
         block_tuples = []
@@ -49,7 +49,7 @@ def normalize_coords_string(coords_str: str) -> str:
         return coords_str
 
 def load_annotated_cds(ref_path: str):
-    """加載註釋的 CDS Block 用於區分 Annotated / Non-canonical ORF"""
+    """Load annotated CDS blocks to distinguish annotated and non-canonical ORFs"""
     global ANNOTATED_CDS_SET
     print(f"Loading annotated CDS blocks from: {ref_path} ...")
     try:
@@ -67,7 +67,7 @@ def load_annotated_cds(ref_path: str):
         sys.exit(1)
 
 def parse_filename_v2(filename_str: str) -> tuple:
-    """从复杂文件名中解析出 (样本名, 比对软件, 预测工具)。"""
+    """Parse the sample, aligner, and prediction tool from a complex file name."""
     base = filename_str.replace('_gcoor.tsv.gz', '')
     parts = base.split('_')
     if len(parts) >= 3:
@@ -77,8 +77,8 @@ def parse_filename_v2(filename_str: str) -> tuple:
 
 def preload_ground_truth_library_final(gt_directory_path: str) -> Dict:
     """
-    预加载金标准库。
-    改为返回 dict: {(chrom, predicted_start, strand): orf_type}
+    Preload the ground-truth reference.
+    Return a dict instead: {(chrom, predicted_start, strand): orf_type}
     """
     ground_truth_library = {}
     print(f"--- Pre-loading Ground Truth Library (Source Tool: {GROUND_TRUTH_TOOL}) ---")
@@ -130,7 +130,7 @@ def preload_ground_truth_library_final(gt_directory_path: str) -> Dict:
     return ground_truth_library
 
 def process_file_worker(task_info: tuple) -> list:
-    """处理单个预测文件的工作函数，分別計算 annotated_CDS 和 non_canonical 兩組的結果。"""
+    """Worker function for one prediction file; calculate the annotated_CDS and non_canonical groups separately."""
     filepath, ground_truth_dict = task_info
     
     filename = os.path.basename(filepath)
@@ -146,11 +146,11 @@ def process_file_worker(task_info: tuple) -> list:
     pred_by_type = {t: set() for t in orf_types}
     gt_by_type = {t: set() for t in orf_types}
 
-    # 1. 劃分金標準 (Ground Truth) 分組
+    # 1. Partition the ground-truth groups
     for tis, orf_type in ground_truth_dict.items():
         gt_by_type[orf_type].add(tis)
 
-    # 2. 劃分當前工具的預測結果分組
+    # 2. Partition predictions from the current tool
     if not df.empty:
         for _, row in df.iterrows():
             try:
@@ -168,7 +168,7 @@ def process_file_worker(task_info: tuple) -> list:
             except (ValueError, IndexError, KeyError):
                 continue
 
-    # 3. 分別計算兩組的 recall 和 validationRate
+    # 3. Calculate recall and validationRate for the two groups separately
     results = []
     for orf_type in orf_types:
         pred_set = pred_by_type[orf_type]
@@ -265,7 +265,7 @@ def run_benchmark_for_directory(prediction_dir: str, output_csv: str, ground_tru
 
 
 def main():
-    """主執行函數。"""
+    """Main function."""
     print("--- Starting Batch ORF Prediction Benchmark (TI-seq mode, Grouped by ORF Type) ---")
     
     load_annotated_cds(REF_BLOCK_FILE)

@@ -5,13 +5,13 @@ import glob
 import re
 from pathlib import Path
 
-# --- 配置区 ---
+# --- Configuration ---
 BASE_PROCESS_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_group/PR_recall_Maxquant/"
 OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_group/PR_recall_Maxquant/"
 
 
 def main():
-    print("--- 开始聚合Maxquant分析结果 (拆分 Annotated_CDS 和 Novel) ---")
+    print("--- Aggregating MaxQuant results (separating Annotated_CDS and Novel) ---")
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
@@ -19,10 +19,10 @@ def main():
     file_list = glob.glob(search_pattern, recursive=True)
     
     if not file_list:
-        print(f"[警告] 在目录 '{BASE_PROCESS_DIR}' 中没有找到任何文件。")
+        print(f"[Warning] No files were found in directory '{BASE_PROCESS_DIR}'.")
         return
         
-    print(f"找到 {len(file_list)} 个结果文件需要处理。")
+    print(f"Found {len(file_list)} result files to process.")
     
     filename_pattern = re.compile(
         r'^(?P<sample>.+)_MS_valid_(?P<level>protein|peptide)_(?P<aligner>[a-zA-Z0-9]+)(?P<fdr_part>.*)_score\.tsv$'
@@ -64,10 +64,10 @@ def main():
             all_data_list.append(df)
             
         except Exception as e:
-            print(f"[错误] 处理文件失败: {filepath}. 错误信息: {e}")
+            print(f"[Error] Failed to process file: {filepath}. Error details: {e}")
             
     if not all_data_list:
-        print("没有成功读取任何数据，程序退出。")
+        print("No data were read successfully; exiting.")
         return
         
     master_df = pd.concat(all_data_list, ignore_index=True)
@@ -75,7 +75,7 @@ def main():
     df_novel = master_df.copy()
     df_anno = master_df.copy()
 
-    # --- 1. 处理 Novel 组 ---
+    # --- 1. Process the Novel group ---
     df_novel['Expression_Group'] = 'novel'
     
     df_novel['valid_ORFs_num'] = df_novel['valid_novel_ORFs_num']
@@ -91,7 +91,7 @@ def main():
         0
     )
 
-    # --- 2. 处理 Annotated CDS 组 ---
+    # --- 2. Process the Annotated CDS group ---
     df_anno['Expression_Group'] = 'annotated_CDS'
     
     df_anno['valid_ORFs_num'] = df_anno['valid_ORFs_num'] - df_anno['valid_novel_ORFs_num']
@@ -122,7 +122,7 @@ def main():
         'MS_valid_ORFs_num', 'pred_ORFs_num', 'valid_ORFs_num'
     ]
     
-    print("\n--- 开始按分组保存最终结果 ---")
+    print("\n--- Saving final results by group ---")
     grouped = final_master_df.groupby(['pred_flag', 'trim_flag', 'fdr', 'level'])
     
     for (pred, trim, fdr, level), group_df in grouped:
@@ -134,9 +134,9 @@ def main():
         final_df = final_df.sort_values(by=['sample', 'tools', 'soft', 'Expression_Group'])
         
         final_df.to_csv(output_filepath, index=False)
-        print(f"成功保存文件: {output_filepath} (包含 {len(final_df)} 行)")
+        print(f"Saved file: {output_filepath} (containing {len(final_df)} rows)")
         
-    print("\n--- 所有任务处理完毕 ---")
+    print("\n--- All tasks completed ---")
 
 if __name__ == '__main__':
     main()

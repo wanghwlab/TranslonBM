@@ -6,7 +6,7 @@ import glob
 import pandas as pd
 import numpy as np
 
-# --- 1. 配置区 ---
+# --- 1. Configuration ---
 TASKS = [
     {
         "name": "TISeq_untrim",
@@ -34,11 +34,11 @@ TASKS = [
     }
 ]
 
-# --- 2. 核心计算函数 ---
+# --- 2. Core calculation functions ---
 
 def calculate_precision_recall(df):
     """
-    根据 tp, fp, fn 动态计算 precision, recall 和 f1-score，确保数值一致性。
+    Calculate precision, recall, and F1 dynamically from tp, fp, and fn to ensure numerical consistency.
     """
     df['precision_a'] = np.where((df['tp_a'] + df['fp_a']) > 0, df['tp_a'] / (df['tp_a'] + df['fp_a']), 0.0)
     df['recall_a'] = np.where((df['tp_a'] + df['fn_a']) > 0, df['tp_a'] / (df['tp_a'] + df['fn_a']), 0.0)
@@ -57,21 +57,21 @@ def calculate_precision_recall(df):
     return df
 
 def process_single_task(task):
-    """处理单个数据集的合并与增益计算"""
+    """Merge and calculate gains for one dataset"""
     print(f"{'='*40}")
-    print(f"正在处理任务: {task['name']}")
+    print(f"Processing task: {task['name']}")
     
     union_files = glob.glob(os.path.join(task['union_dir'], "*combined_metrics*.csv"))
     intersect_files = glob.glob(os.path.join(task['intersect_dir'], "*combined_metrics*.csv"))
 
     if not union_files or not intersect_files:
-        print(f"  [跳过] 未找到足够的 CSV 文件。\n  Union目录: {task['union_dir']}\n  Intersect目录: {task['intersect_dir']}")
+        print(f"  [Skipped] Insufficient CSV files.\n  Union directory: {task['union_dir']}\n  Intersect directory: {task['intersect_dir']}")
         return
 
     df_union = pd.concat([calculate_precision_recall(pd.read_csv(f)) for f in union_files], ignore_index=True)
     df_intersect = pd.concat([calculate_precision_recall(pd.read_csv(f)) for f in intersect_files], ignore_index=True)
 
-    print(f"  共加载了 {len(df_union)} 条 Union 记录，{len(df_intersect)} 条 Intersect 记录。")
+    print(f"  Loaded {len(df_union)} Union records, {len(df_intersect)} Intersect records.")
 
     merge_keys = ['aligner', 'sample', 'tool_a', 'tool_b']
 
@@ -91,7 +91,7 @@ def process_single_task(task):
     df_merged = pd.merge(df_union, df_intersect_subset, on=merge_keys, how='inner')
 
     if df_merged.empty:
-        print("  [警告] 合并后数据为空！请确保两组数据的 aligner, sample, tool_a, tool_b 完全匹配。")
+        print("  [Warning] The merged data are empty. Ensure aligner, sample, tool_a, and tool_b match exactly between datasets.")
         return
 
     df_merged['max_recall'] = np.maximum(df_merged['recall_a'], df_merged['recall_b'])
@@ -127,11 +127,11 @@ def process_single_task(task):
 
     os.makedirs(os.path.dirname(task['output_file']), exist_ok=True)
     df_merged.to_csv(task['output_file'], index=False)
-    print(f"  计算完成！有效配对数据共 {len(df_merged)} 条。")
-    print(f"  结果已保存至: {task['output_file']}")
+    print(f"  Calculation completed. Valid paired records: {len(df_merged)}.")
+    print(f"  Results saved to: {task['output_file']}")
 
 if __name__ == "__main__":
-    print("开始执行组合增益批量计算...")
+    print("Starting batch calculation of combination gains...")
     for task in TASKS:
         process_single_task(task)
-    print("\n所有任务处理完毕。")
+    print("\nAll tasks completed.")

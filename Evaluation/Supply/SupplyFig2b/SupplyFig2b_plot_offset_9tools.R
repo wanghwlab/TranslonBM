@@ -4,14 +4,14 @@ library(RColorBrewer)
 library(cowplot)
 
 # ==============================================================================
-# 1. 设置文件路径
+# 1. Set file paths
 # ==============================================================================
 rld_file <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/merged_RLD_stats_final.csv"
 offset_file <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/merged_offsets_all.csv"
 output_pdf <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_simu/rld_offsets_chrN_simu_untrim.pdf"
 
 # ==============================================================================
-# 2. 定义映射字典
+# 2. Define mapping dictionary
 # ==============================================================================
 sample_map <- c(
   "SRX876063_SRX876069" = "Ji et al. (2015)",
@@ -33,7 +33,7 @@ psite_rename_map <- c(
 )
 
 # ==============================================================================
-# 3. 读取并处理 RLD 数据 
+# 3. Read and process RLD data
 # ==============================================================================
 rld_data <- read_csv(rld_file, show_col_types = FALSE) %>%
   rename(mapping_software = ORFtools, samples = sample) %>% 
@@ -44,7 +44,7 @@ rld_data <- read_csv(rld_file, show_col_types = FALSE) %>%
   select(samples, mapping_software, read_length, fraction) 
 
 # ==============================================================================
-# 4. 读取并处理 Offset 数据 
+# 4. Read and process offset data
 # ==============================================================================
 offset_data_raw <- read_csv(offset_file, show_col_types = FALSE)
 colnames(offset_data_raw) <- c("sample_combined", "psite_software", "read_length", "offset")
@@ -54,7 +54,7 @@ offset_data <- offset_data_raw %>%
   filter(between(read_length, 25, 35))
 
 # ==============================================================================
-# 5. 构建完整骨架并合并数据 
+# 5. Build the complete data skeleton and merge data
 # ==============================================================================
 existing_pipelines <- offset_data %>%
   distinct(samples, mapping_software, psite_software)
@@ -76,7 +76,7 @@ full_data <- full_skeleton %>%
   )
 
 # ==============================================================================
-# 6. 设置因子水平
+# 6. Set factor levels
 # ==============================================================================
 full_data <- full_data %>%
   mutate(mapping_software = factor(mapping_software, levels = c("HISAT2","STAR", "TopHat2")))
@@ -98,7 +98,7 @@ full_data <- full_data %>%
   mutate(pipeline = factor(pipeline, levels = unique(pipeline) %>% rev()))
 
 # ==============================================================================
-# 7. 绘图函数
+# 7. Plotting function
 # ==============================================================================
 plot_rld_offset <- function(df, aes_x, aes_y, aes_fill, text_para, label_para) {
   
@@ -132,7 +132,7 @@ plot_rld_offset <- function(df, aes_x, aes_y, aes_fill, text_para, label_para) {
 }
 
 # ==============================================================================
-# 8. 生成并保存
+# 8. Generate and save
 # ==============================================================================
 
 p <- plot_rld_offset(

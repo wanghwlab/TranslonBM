@@ -1,6 +1,6 @@
 import os
 
-# ================= 变量定义区域 =================
+# ================= Variable definitions =================
 SAMPLES = [
     "SRX11812007_SRX11812008_SRX11812009",
     "SRX1254413",
@@ -25,7 +25,7 @@ SCRIPT_CONVERT = "./scripts/ORFquant_convert.R"
 SCRIPT_GTF = "./scripts/gtf.py"
 SCRIPT_MERGE = "./scripts/ORFquant_ORFmerge.R"
 
-# ================= 规则定义区域 =================
+# ================= Rule definitions =================
 
 rule all:
   input:

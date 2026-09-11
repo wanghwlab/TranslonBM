@@ -167,7 +167,7 @@ def read_one_level(config):
     required_cols = {"sample", "soft", "tools", "precision", "recall"}
     missing = required_cols - set(df.columns)
     if missing:
-        raise ValueError(f"{input_csv} 缺少必要列: {missing}")
+        raise ValueError(f"{input_csv} is missing required columns: {missing}")
 
     df = df.copy()
     df["level"] = level
@@ -202,11 +202,11 @@ def summarize_precision_recall(df):
 
 def add_f1_curves(ax, f1_scores=(0.1, 0.3, 0.5, 0.7, 0.9)):
     """
-    在 precision-recall 图中添加 F1-score 等值线。
+    Add F1-score contours to the precision-recall plot.
 
     F1 = 2 * precision * recall / (precision + recall)
 
-    给定 F1 和 recall，反推 precision：
+    Given F1 and recall, solve for precision:
     precision = F1 * recall / (2 * recall - F1)
     """
     recall = np.linspace(0.001, 1.0, 1000)

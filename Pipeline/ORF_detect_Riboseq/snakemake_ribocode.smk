@@ -9,7 +9,7 @@ try:
     #SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t").sample.tolist()
     SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t")['sample'].tolist()
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含一个名为 'sample' 的列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains a column named 'sample'. Error: {e}")
 
 
 SPE = 'Human'
@@ -27,7 +27,7 @@ workdir: OUT_DIR
 
 rule all:
   input:
-    # 使用 expand 函数，为 SAMPLES 列表中的每个样本生成最终的 raw_table_result 目标
+    # Use expand to generate the final raw_table_result target for each sample in SAMPLES
     expand('orf_result/raw_prediction_result_default/{sample}_{mpsf}_RiboCode_raw.txt', sample=SAMPLES, mpsf=MAPPING_SOFTWARE)
 
 rule ribocode_index:

@@ -16,7 +16,7 @@ import os
 import multiprocessing
 from matplotlib.backends.backend_pdf import PdfPages
 
-# --- 1. 配置区 ---
+# --- 1. Configuration ---
 INPUT_DIR = '/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/Mean_score'
 OUTPUT_DIR = '/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/Mean_plots_Scatter'
 
@@ -37,18 +37,18 @@ COLORS = [
 TOOL_COLOR_MAP = dict(zip(TOOL_ORDER, COLORS))
 LETTER_COLOR_MAP = {TOOL_MAP[tool]: TOOL_COLOR_MAP[tool] for tool in TOOL_ORDER}
 
-# --- 2. 核心函数 ---
+# --- 2. Core functions ---
 def get_combo_label(t1, t2):
-    """根据两个软件的名称，返回按字母顺序排列的组合标签（例如 'AK'）"""
+    """Return an alphabetically ordered combination label from two tool names (for example, 'AK')"""
     if t1 not in TOOL_MAP or t2 not in TOOL_MAP:
         return ""
     l1, l2 = TOOL_MAP[t1], TOOL_MAP[t2]
     return "".join(sorted([l1, l2]))
 
 def process_aligner(args):
-    """为单个 Aligner 绘制 3x2 的散点图并保存为 PDF"""
+    """Draw a 3x2 scatter plot for one aligner and save it as PDF"""
     (aligner, trim_status), df_aligner = args
-    print(f"正在处理: {aligner} [{trim_status}]")
+    print(f"Processing: {aligner} [{trim_status}]")
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     pdf_path = os.path.join(OUTPUT_DIR, f"{aligner}_Combination_Scatter_Gains_{trim_status}.pdf")
@@ -121,13 +121,13 @@ def process_aligner(args):
     with PdfPages(pdf_path) as pdf:
         pdf.savefig(fig, bbox_inches='tight')
     plt.close(fig)
-    print(f"  - 完成保存: {os.path.basename(pdf_path)}")
+    print(f"  - Saved: {os.path.basename(pdf_path)}")
 
 
 def main():
     csv_files = glob.glob(os.path.join(INPUT_DIR, 'merged_gain*.csv'))
     if not csv_files:
-        print(f"错误：在目录 '{INPUT_DIR}' 中找不到 CSV 文件。")
+        print(f"Error: no CSV files were found in directory '{INPUT_DIR}'.")
         return
         
     df_list = []
@@ -153,7 +153,7 @@ def main():
                 
             df_list.append(temp_df)
         except Exception as e:
-            print(f"读取 {f} 时出错: {e}")
+            print(f"Reading {f} failed: {e}")
             
     if not df_list: return
     
@@ -163,11 +163,11 @@ def main():
     for (al, ts), group in full_df.groupby(['aligner', 'trim_status']):
         tasks.append(((al, ts), group.copy()))
         
-    print(f"找到 {len(tasks)} 个 Aligner/Trim 组合进行绘图...")
+    print(f"Found {len(tasks)} Aligner/Trim combinations to plot...")
     
     with multiprocessing.Pool(min(NUM_PROCESSES, len(tasks))) as pool:
         pool.map(process_aligner, tasks)
         
-    print("\n所有 Scatter 绘图任务处理完成！图表保存在:", OUTPUT_DIR)
+    print("\nAll scatter-plot tasks completed. Plots saved in:", OUTPUT_DIR)
 if __name__ == '__main__':
     main()

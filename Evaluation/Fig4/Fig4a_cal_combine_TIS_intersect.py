@@ -9,7 +9,7 @@ import multiprocessing
 from collections import defaultdict
 import itertools
 
-# --- 1. 配置区---
+# --- 1. Configuration---
 BASE_INPUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/"
 BASE_OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/TIS_score_intersect_untrim/"
 GTF_FILE = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation_TIS.gtf"
@@ -35,9 +35,9 @@ DIRECTORIES_TO_PROCESS = [
 
 NUM_PROCESSES = 32
 
-# --- 2. 核心功能函数 ---
+# --- 2. Core functions ---
 def load_ground_truth(gtf_path: str) -> set:
-    """從GTF文件中加載真實的TIS坐標。"""
+    """Load ground-truth TIS coordinates from the GTF file."""
     ground_truth_set = set()
     print("Loading ground truth TIS from GTF file...")
     try:
@@ -55,7 +55,7 @@ def load_ground_truth(gtf_path: str) -> set:
     return ground_truth_set
 
 def parse_filename(filename_str: str) -> tuple:
-    """從文件名中解析出 sample, soft (aligner), tools。"""
+    """Parse sample, aligner, and tool from the file name."""
     base = filename_str.replace('_gcoor.tsv.gz', '')
     parts = base.split('_')
     if len(parts) >= 3:
@@ -65,9 +65,9 @@ def parse_filename(filename_str: str) -> tuple:
 
 def calculate_orf_metrics(predicted_orfs: list, truth_set: set) -> dict:
     """
-    为给定的ORF列表计算所有指标。
-    - TP/FP 基于ORF的数量。
-    - FN 基于去重后TIS的覆盖情况，采用 FN = |Truth Set| - |TIS_hit|。
+    Calculate all metrics for the given ORF list.
+    - TP/FP based on the ORF count.
+    - FN based on coverage of deduplicated TIS values, using FN = |Truth Set| - |TIS_hit|.
     """
     if not predicted_orfs:
         return {'tp': 0, 'fp': 0, 'fn': len(truth_set), 'tis_hit': 0, 'precision': 0.0, 'recall': 0.0, 'fscore': 0.0}
@@ -92,7 +92,7 @@ def calculate_orf_metrics(predicted_orfs: list, truth_set: set) -> dict:
 
 
 def load_orfs_from_file(filepath: str) -> tuple:
-    """从单个文件中加载ORF列表，每个ORF包含其标识和TIS坐标。"""
+    """Load the ORF list from one file; each ORF contains an identifier and TIS coordinate."""
     try:
         sample, aligner, tool = parse_filename(os.path.basename(filepath))
         if not all([sample, aligner, tool]): return None
@@ -131,7 +131,7 @@ def load_orfs_from_file(filepath: str) -> tuple:
         return None
 
 def main():
-    """主执行函数 (内存优化版，按样本循环处理)。"""
+    """Main function (memory-optimized version, processing one sample at a time)."""
     print("--- Starting ORF Combination Performance Analysis (Memory-Optimized Workflow) ---")
 
     ground_truth_set = load_ground_truth(GTF_FILE)

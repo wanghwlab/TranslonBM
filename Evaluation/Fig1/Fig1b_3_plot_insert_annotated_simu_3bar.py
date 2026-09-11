@@ -29,7 +29,7 @@ base_dir = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/tools_overlap/"
 annotation_types = ['merged_canonical_ATG/orf_pred_default_untrim','merged_non_canonical_ATG/orf_pred_default_untrim','merged_canonical_ATG/orf_pred_default_trim','merged_non_canonical_ATG/orf_pred_default_trim']
 
 softwares_order = ['hisat2', 'STAR', 'tophat2']
-soft_colors = {"hisat2": "#E64B35", "STAR": "#4DBBD5", "tophat2": "#00A087"} # 仅作参考，脚本主要使用堆叠颜色
+soft_colors = {"hisat2": "#E64B35", "STAR": "#4DBBD5", "tophat2": "#00A087"} # for reference only; the script mainly uses stacked-bar colors
 
 def get_sort_key_from_id(sim_id):
     keys = list(name_mapping.keys())

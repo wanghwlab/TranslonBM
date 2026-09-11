@@ -18,22 +18,22 @@ output_csv = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overl
 
 results_list = []
 
-print("开始统计 1_tools 的软件来源比例...")
+print("Calculating the software-source proportions for 1_tools...")
 
 for ds in datasets:
     for al in aligners:
         overlap_file = os.path.join(overlap_dir, f"{ds}_{al}_overlap_count.txt")
         
         if not os.path.exists(overlap_file):
-            print(f"[跳过] 找不到文件: {overlap_file}")
+            print(f"[Skipped] File not found: {overlap_file}")
             continue
             
-        print(f"正在处理: {ds} - {al}")
+        print(f"Processing: {ds} - {al}")
         
         df_overlap = pd.read_csv(overlap_file, sep=r'\s+')
         
         if 'tools' not in df_overlap.columns or 'coordinate_id' not in df_overlap.columns:
-            print(f"[警告] 文件 {overlap_file} 缺少必要的列，请检查格式。")
+            print(f"[Warning] File {overlap_file} is missing required columns; check the format.")
             continue
             
         set_1_tools = set(df_overlap[df_overlap['tools'] == '1_tools']['coordinate_id'])
@@ -46,7 +46,7 @@ for ds in datasets:
         }
         
         if total_1_tools == 0:
-            print(f"  -> {ds} {al} 中没有 1_tools 的 ORF。")
+            print(f"  -> {ds} {al} contains no ORFs assigned to 1_tools.")
             for tool in tools:
                 row_data[f'{tool}_count'] = 0
                 row_data[f'{tool}_percent(%)'] = 0.0
@@ -64,7 +64,7 @@ for ds in datasets:
                     overlap_count = len(tool_coords.intersection(set_1_tools))
                     
                 except Exception as e:
-                    print(f"  [错误] 读取文件 {pred_file} 失败: {e}")
+                    print(f"  [Error] Reading file {pred_file} failed: {e}")
                     overlap_count = 0
             else:
                 overlap_count = 0
@@ -79,4 +79,4 @@ for ds in datasets:
 df_results = pd.DataFrame(results_list)
 df_results.to_csv(output_csv, index=False)
 
-print(f"\n统计完成！结果已成功保存至当前目录下的: {output_csv}")
+print(f"\nStatistics completed. Results saved in the current directory as: {output_csv}")

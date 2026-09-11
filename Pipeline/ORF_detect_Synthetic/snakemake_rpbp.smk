@@ -9,7 +9,7 @@ PREPARE_GENOME_YAML = "/home/tangyuewen/ORF_benchmark/Ref/ORFtools/rpbp/prepare_
 try:
     SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t")['sample'].tolist()
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含一个名为 'sample' 的列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains a column named 'sample'. Error: {e}")
 
 SPE = 'Human'
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
@@ -54,7 +54,7 @@ rule prepare_genome_indices:
     conda:'rpbp_env'
     threads: 1 
     shell:
-        # --overwrite 确保可以覆盖不完整的文件
+        # --overwrite allows incomplete files to be replaced
         #"prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --overwrite"
         "prepare-rpbp-genome {input.config} --num-cpus {threads} --log-file {log} --mem 32G"
 
@@ -88,7 +88,7 @@ rule create_symlink_default:
     'rpbp_chrN/orf_pred_default/{sample}_{mpsf}/without-rrna-mapping/{sample}_{mpsf}Aligned.sortedByCoord.out.bam'
   run:
     if not os.path.exists(input.bam_file):
-        raise FileNotFoundError(f"输入BAM文件未找到: {input.bam_file}")
+        raise FileNotFoundError(f"Input BAM file not found: {input.bam_file}")
     os.symlink(os.path.abspath(input.bam_file), output[0])
 
 

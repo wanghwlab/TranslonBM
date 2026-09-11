@@ -9,7 +9,7 @@ import multiprocessing
 import sys
 from typing import List, Dict, Set, Tuple
 
-# --- 配置區 ---
+# --- Configuration ---
 BASE_INPUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/"
 BASE_OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/PR_recall_Blocks/merged_ATG/" 
 REF_BLOCK_FILE = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.block_Trans_Mod.txt"
@@ -26,9 +26,9 @@ DIRECTORIES_TO_PROCESS = [
 
 def normalize_coords_string(coords_str: str) -> str:
     """
-    將坐標字符串標準化，確保格式一致。
-    例如輸入 "100-200,50-80" 會被重排為 "50-80,100-200"。
-    這能防止因exon順序不同導致的匹配失敗。
+    Normalize coordinate strings to ensure a consistent format.
+    For example, input "100-200,50-80" is reordered as "50-80,100-200".
+    This prevents matching failures caused by different exon orders.
     """
     try:
         blocks = coords_str.strip().split(',')
@@ -45,8 +45,8 @@ def normalize_coords_string(coords_str: str) -> str:
 
 def load_ground_truth(ref_path: str) -> Set[Tuple]:
     """
-    從新的 TXT 文件中加載真實的 CDS Block 坐標。
-    文件格式: GeneID <tab> Chrom <tab> BlockCoords <tab> Strand <tab> TranscriptID
+    Load the ground-truth CDS block coordinates from the new TXT file.
+    File format: GeneID <tab> Chrom <tab> BlockCoords <tab> Strand <tab> TranscriptID
     """
     ground_truth_set = set()
     print(f"Loading ground truth Blocks from: {ref_path} ...")
@@ -74,7 +74,7 @@ def load_ground_truth(ref_path: str) -> Set[Tuple]:
     return ground_truth_set
 
 def parse_filename(filename_str: str) -> tuple:
-    """從文件名中解析出 sample, soft, tools。"""
+    """Parse sample, aligner, and tool from the file name."""
     base = filename_str.replace('_gcoor.tsv.gz', '')
     parts = base.split('_')
     if len(parts) >= 3:
@@ -84,8 +84,8 @@ def parse_filename(filename_str: str) -> tuple:
 
 def extract_orf_info_from_row(row: pd.Series) -> tuple:
     """
-    從 DataFrame 的一行中提取 ORF 完整坐標信息。
-    返回: (chrom, strand, normalized_block_string)
+    Extract the complete ORF coordinates from a DataFrame row.
+    Return: (chrom, strand, normalized_block_string)
     """
     try:
         chrom = row['chrom']
@@ -99,7 +99,7 @@ def extract_orf_info_from_row(row: pd.Series) -> tuple:
         return None
 
 def process_file_worker(task_info: tuple) -> Dict:
-    """處理單個預測文件的工作函數。"""
+    """Worker function for one prediction file."""
     filepath, ground_truth_set, filter_type = task_info
     
     filename = os.path.basename(filepath)
@@ -154,7 +154,7 @@ def process_file_worker(task_info: tuple) -> Dict:
 
 
 def run_benchmark_for_directory(prediction_dir: str, output_basename: str, ground_truth_set: Set[Tuple]):
-    """對單個目錄執行完整的評分。"""
+    """Run the complete scoring procedure for one directory."""
     print("-" * 80)
     print(f"Starting Block-level benchmark for directory: {prediction_dir}")
     if not os.path.isdir(prediction_dir):

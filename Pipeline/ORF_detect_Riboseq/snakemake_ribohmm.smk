@@ -8,7 +8,7 @@ SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/c
 try:
     SAMPLES_DF = pd.read_csv(SAMPLE_SHEET, sep="\t").set_index("ribo_sample", drop=False)
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含 'ribo_sample' 和 'rna_sample' 列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains 'ribo_sample' and 'rna_sample' columns. Error: {e}")
 
 SAMPLES = SAMPLES_DF.index.tolist()
 

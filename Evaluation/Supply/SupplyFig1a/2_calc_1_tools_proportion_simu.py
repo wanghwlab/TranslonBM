@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-# 1. 定义数据集、比对软件和ORF预测软件
+# 1. Define datasets, aligners, and ORF prediction tools
 datasets = [
     #"SRX876063_SRX876069", "SRX740748", "SRX1254413", 
     #"SRX5256543_SRX5256555", "SRX5887328_SRX5887329_SRX5887330", 
@@ -14,30 +14,30 @@ tools = [
     "ribowave", "orfrater", "orfquant", "gedi", "ribotaper", "rpbp"
 ]
 
-# 2. 定义文件路径
+# 2. Define file paths
 overlap_dir = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/tools_overlap/merged_ATG/orf_pred_default_untrim/"
 pred_dir = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/orf_pred_default_untrim/"
 output_csv = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/1tools_percent/1_tools_proportion_summary_simu_untrim.csv"
 
 results_list = []
 
-print("开始统计 1_tools 的软件来源比例...")
+print("Calculating the software-source proportions for 1_tools...")
 
-# 3. 遍历所有数据集和比对软件的组合
+# 3. Iterate over all dataset and aligner combinations
 for ds in datasets:
     for al in aligners:
         overlap_file = os.path.join(overlap_dir, f"{ds}_{al}_overlap_count.txt")
         
         if not os.path.exists(overlap_file):
-            print(f"[跳过] 找不到文件: {overlap_file}")
+            print(f"[Skipped] File not found: {overlap_file}")
             continue
             
-        print(f"正在处理: {ds} - {al}")
+        print(f"Processing: {ds} - {al}")
         
         df_overlap = pd.read_csv(overlap_file, sep=r'\s+')
         
         if 'tools' not in df_overlap.columns or 'coordinate_id' not in df_overlap.columns:
-            print(f"[警告] 文件 {overlap_file} 缺少必要的列，请检查格式。")
+            print(f"[Warning] File {overlap_file} is missing required columns; check the format.")
             continue
             
         set_1_tools = set(df_overlap[df_overlap['tools'] == '1_tools']['coordinate_id'])
@@ -50,14 +50,14 @@ for ds in datasets:
         }
         
         if total_1_tools == 0:
-            print(f"  -> {ds} {al} 中没有 1_tools 的 ORF。")
+            print(f"  -> {ds} {al} contains no ORFs assigned to 1_tools.")
             for tool in tools:
                 row_data[f'{tool}_count'] = 0
                 row_data[f'{tool}_percent(%)'] = 0.0
             results_list.append(row_data)
             continue
             
-        # 4. 遍历 11 种 ORF 预测软件，寻找交集
+        # 4. Check the 11 ORF prediction tools for overlaps
         for tool in tools:
             pred_file = os.path.join(pred_dir, f"{ds}_{al}_{tool}_gcoor.tsv.gz")
             
@@ -68,7 +68,7 @@ for ds in datasets:
                     overlap_count = len(tool_coords.intersection(set_1_tools))
                     
                 except Exception as e:
-                    print(f"  [错误] 读取文件 {pred_file} 失败: {e}")
+                    print(f"  [Error] Reading file {pred_file} failed: {e}")
                     overlap_count = 0
             else:
                 overlap_count = 0
@@ -80,8 +80,8 @@ for ds in datasets:
             
         results_list.append(row_data)
 
-# 5. 将结果保存为 CSV
+# 5. Save results as CSV
 df_results = pd.DataFrame(results_list)
 df_results.to_csv(output_csv, index=False)
 
-print(f"\n统计完成！结果已成功保存至当前目录下的: {output_csv}")
+print(f"\nStatistics completed. Results saved in the current directory as: {output_csv}")

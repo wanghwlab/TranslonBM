@@ -18,7 +18,7 @@ cowplot::set_null_device("pdf")
 loadfonts(device = "pdf")
 cowplot::set_null_device("pdf")
 
-# --- 1. 设置文件路径 ---
+# --- 1. Set file paths ---
 setwd("/home/tangyuewen/ORF_benchmark/final_ORFs_2025.7/plots/Other_plots/")
 workdir <- "/home/tangyuewen/ORF_benchmark/simulation_preprocessing"
 #gcoor_dir <- "/home/tangyuewen/ORF_benchmark/final_ORFs_2025.7/final_ORFs/merged/orf_pred_default_trim"
@@ -321,7 +321,7 @@ legend_plot <- cowplot::get_legend(legend_fig)
 list(codon_group = c("ATG", "NTG")) |>
   pwalk(\(codon_group) {
     
-    # -- 1. 验证率图 --
+    # -- 1. Validation-rate plot --
     fig_data_subset <- fig_data |> filter(codon_group == !!codon_group)
     
     fig_data_df <- fig_data_subset |> 
@@ -337,7 +337,7 @@ list(codon_group = c("ATG", "NTG")) |>
     ggsave(filename = validation_filename, plot = block_valid_fig, width = 12, height = 16, limitsize = FALSE, device = cairo_pdf)
     print(paste("Saved:", validation_filename))
     
-    # -- 2. 非验证率图 --
+    # -- 2. Non-validation-rate plot --
     unvalid_data_subset <- ORF_unvalid_data |> filter(codon_group == !!codon_group)
     
     block_unvalid_fig <- unvalid_data_subset |> 
@@ -382,10 +382,10 @@ ORF_unvalid_data_NTG <- fig_data_NTG |>
 	
 	
 # ===================================================
-# ===========   为 ATG 组绘图并保存   ==============
+# ===========   Plot and save the ATG group   ==============
 # ===================================================
 
-# -- 1. 验证率图 (ATG) --
+# -- 1. Validation-rate plot (ATG) --
 fig_data_df_ATG <- fig_data_ATG |> 
     group_nest(samples, aligner, .key = "simulation_data") |>
     arrange(samples, aligner) |>
@@ -399,7 +399,7 @@ validation_filename_ATG <- file.path(workdir, "block_level_validation_ATG.pdf")
 ggsave(filename = validation_filename_ATG, plot = block_valid_fig_ATG, width = 12, height = 16, limitsize = FALSE, device = cairo_pdf)
 print(paste("Saved:", validation_filename_ATG))
 
-# -- 2. 非验证率图 (ATG) --
+# -- 2. Non-validation-rate plot (ATG) --
 block_unvalid_fig_ATG <- ORF_unvalid_data_ATG |> 
     mutate(orf_detector = forcats::fct_rev(orf_detector)) |> 
     ggplot() +
@@ -418,10 +418,10 @@ print(paste("Saved:", unvalidation_filename_ATG))
 
 
 # ===================================================
-# ===========   为 NTG 组绘图并保存   ==============
+# ===========   Plot and save the NTG group   ==============
 # ===================================================
 
-# -- 1. 验证率图 (NTG) --
+# -- 1. Validation-rate plot (NTG) --
 fig_data_df_NTG <- fig_data_NTG |> 
     group_nest(samples, aligner, .key = "simulation_data") |>
     arrange(samples, aligner) |>
@@ -435,7 +435,7 @@ validation_filename_NTG <- file.path(workdir, "block_level_validation_NTG.pdf")
 ggsave(filename = validation_filename_NTG, plot = block_valid_fig_NTG, width = 12, height = 16, limitsize = FALSE, device = cairo_pdf)
 print(paste("Saved:", validation_filename_NTG))
 
-# -- 2. 非验证率图 (NTG) --
+# -- 2. Non-validation-rate plot (NTG) --
 block_unvalid_fig_NTG <- ORF_unvalid_data_NTG |> 
     mutate(orf_detector = forcats::fct_rev(orf_detector)) |> 
     ggplot() +

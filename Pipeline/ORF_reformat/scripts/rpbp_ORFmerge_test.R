@@ -96,23 +96,23 @@ tid2gid <- read_tsv(
     )
 )
 
-# 在脚本开头确保加载了 Biostrings (通常 GenomicRanges 依赖它，但显式加载更好)
+# Load Biostrings explicitly at the start of the script (GenomicRanges usually depends on it)
 library(Biostrings)
 
 preprocessing <- possibly(function(raw_file, ORF_fa) {
     
-    # --- 修改开始: 正确读取 FASTA 文件 ---
-    # 读取 FASTA 为 DNAStringSet 对象
+    # --- Modification begins: read the FASTA file correctly ---
+    # Read FASTA as a DNAStringSet object
     fa_obj <- readDNAStringSet(ORF_fa)
     
-    # 转换为 Tibble 用于后续 join
-    # 注意：names(fa_obj) 通常包含 header 信息，需要确保它能和 raw_file 中的 id 对应
-    # 这里假设 raw_file 中的 id 与 fasta header 的第一部分(空格前)一致
+    # Convert to a Tibble for the subsequent join
+    # Note: names(fa_obj) usually contains header information; ensure it matches the id in raw_file
+    # Assume the id in raw_file matches the first space-delimited field of the FASTA header
     ORF_sequence <- tibble(
-        id = names(fa_obj) |> str_split_i(" ", 1), # 提取空格前的 ID，视具体 header 格式调整
+        id = names(fa_obj) |> str_split_i(" ", 1), # Extract the ID before the first space; adjust for the actual header format
         ORF_sequence = as.character(fa_obj)
     )
-    # --- 修改结束 ---
+    # --- Modification ends ---
 
     ORF_blocks <- read_tsv(
         raw_file,
@@ -120,7 +120,7 @@ preprocessing <- possibly(function(raw_file, ORF_fa) {
         col_types = cols(.default = "c")
     ) |>
         dplyr::rename_with(~ stringr::str_sub(.x, 2, -1), everything()) |>
-        # 这里原来的 inner_join 逻辑保持不变
+        # The original inner_join logic is unchanged
         dplyr::inner_join(ORF_sequence, by = c("id" = "id")) |>
         dplyr::rename(
             chrom = seqname,
@@ -140,8 +140,8 @@ preprocessing <- possibly(function(raw_file, ORF_fa) {
         tidyr::separate(id, c("transcript_id", "pos"), sep = "_") |>
         dplyr::inner_join(tid2gid, by = c("transcript_id" = "transcript_id"))
     
-    return(ORF_blocks) # 显式返回，是个好习惯
-}, otherwise = NULL) # 显式写出 otherwise
+    return(ORF_blocks) # Return explicitly
+}, otherwise = NULL) # Specify otherwise explicitly
 
 format_ORF <- function(ORF_blocks, formatted_ORF) {
     ORF_blocks <- ORF_blocks |>
@@ -167,18 +167,18 @@ merge_ORF <- function(ORF_blocks, merged_ORF) {
 
 #target_dir <- snakemake@params[["fa_dir"]]
 
-# 【修改点】不再匹配样本名前缀，直接找该目录下任何以 .fa 结尾的文件
-# ignore.case = TRUE 可以同时匹配 .fa 和 .FA
+# Modification: stop matching the sample prefix and find any .fa file in this directory
+# ignore.case = TRUE matches both .fa and .FA
 #found_fa <- list.files(target_dir, pattern = "\\.fa$", full.names = TRUE, ignore.case = TRUE)[1]
 
-# 打印一下路径方便调试 (如果还报错，查看日志就能知道它到底在哪找文件)
-#message("正在目录查找 FA 文件: ", target_dir)
-#message("找到文件: ", found_fa)
+# Print the path for debugging so the log shows where the file search occurs
+#message("Searching the directory for an FA file: ", target_dir)
+#message("Found file: ", found_fa)
 
 #if (is.na(found_fa)) {
-##    # 如果找不到，列出该目录下有哪些文件，方便排查
+##    # If no file is found, list the directory contents for troubleshooting
 #    existing_files <- list.files(target_dir)
-#    stop(paste0("Error: 在目录 ", target_dir, " 中未找到 .fa 文件。\n目录下的文件有: ", paste(existing_files, collapse = ", ")))
+#    stop(paste0("Error: no .fa file was found in directory ", target_dir, ".\nFiles in the directory: ", paste(existing_files, collapse = ", ")))
 #}
 
 ORF_processed <- preprocessing(

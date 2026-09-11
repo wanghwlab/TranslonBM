@@ -10,7 +10,7 @@ library(ggthemes)
 library(cowplot)
 
 
-# --- 数据读取与预处理 ---
+# --- Data loading and preprocessing ---
 setwd('/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/time_benchmark_cores')
 
 #csv_file_path <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/time_benchmark/version2026.1/ORF_time_benchmark_summary_10.23.csv"
@@ -19,7 +19,7 @@ csv_file_path <- "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/time_benchma
 
 raw_data <- read_csv(csv_file_path)
 
-#  --- 1. 在原始数据上创建 basename 列 --- 
+#  --- 1. Create the basename column in the raw data ---
 data_with_basename <- raw_data %>%
     mutate(
         basename = case_when(
@@ -49,7 +49,7 @@ expanded_indexing_steps <- indexing_steps %>%
 combined_for_final_agg <- bind_rows(analysis_steps, expanded_indexing_steps)
 
 
-# --- 2. 软件聚合 ---
+# --- 2. Tool aggregation ---
 final_data <- combined_for_final_agg %>%
   group_by(sample, aligner, software, chr, parameter) %>%
   summarise(
@@ -58,7 +58,7 @@ final_data <- combined_for_final_agg %>%
     .groups = 'drop'
   )
 
-# --- 3. 添加绘图所需的新分类和标签列 ---
+# --- 3. Add classification and label columns required for plotting ---
 study_name_map <- c(
     "SRX876063_SRX876069" = "Ji et al. (2015)", "SRX740748" = "Gao et al. (2015)",
     "SRX1254413" = "Calviello et al. (2016)", "SRX1447296" = "Raj et al. (2016)",
@@ -92,14 +92,14 @@ plot_ready_data <- final_data %>%
     mutate(study_name = factor(study_name, levels = unique(c(sample_order, sample)))) %>%
     mutate(aligner = factor(aligner, levels = c("STAR", "hisat2", "tophat2")))
 
-# --- 4. 定义自定义颜色 ---
+# --- 4. Define custom colors ---
 software_colors <- c(
   "riboseqc" = "#FAE17D", "gedi" = "#93C681", "ribocode" = "#58AC52", "ribotish" = "#E28792",
   "ribotricer" = "#4E8BC6", "ribotaper" = "#84CFAB", "ribowave" = "#836AB8", "riborf" = "#C2A2B8",
   "rpbp" = "#79A690", "ORFquant" = "#6E8486", "orfrater" = "#6F5E50", "ribohmm" = "#EB8730"
 )
 
-# --- 5. 循环绘图与保存 ---
+# --- 5. Iterate over plots and save them ---
 print("Step 2: Generating plots...")
 
 dataset_types <- unique(plot_ready_data$dataset_type)

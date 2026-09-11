@@ -204,7 +204,7 @@ process_one_condition <- function(sample_id, aligner_id) {
         current_gene_groups <- gene_groups_raw |>
             select(gene_id = Geneid, gene_group = all_of(target_col))
     } else {
-        warning("在 gene_expression_groups.csv 中未找到列名: ", target_col)
+        warning("Column not found in gene_expression_groups.csv: ", target_col)
         current_gene_groups <- tibble(gene_id = character(), gene_group = character())
     }
 
@@ -483,4 +483,4 @@ write_csv(fig_data_2D, file.path(out_dir, "Sensitivity_Heatmap_GeneGroup_Data.cs
 write_csv(auc_results, file.path(out_dir, "Sensitivity_AUC_Results.csv"))
 write_csv(auc_results_2D, file.path(out_dir, "Sensitivity_AUC_GeneGroup_Results.csv"))
 
-message("=== 完成：已输出 CSV、Sensitivity_Heatmap_GeneGroup.pdf 和 Sensitivity_Heatmap_GeneGroup_ATG.pdf。===")
+message("=== Completed: wrote the CSV, Sensitivity_Heatmap_GeneGroup.pdf, and Sensitivity_Heatmap_GeneGroup_ATG.pdf.===")

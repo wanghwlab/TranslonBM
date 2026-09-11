@@ -6,25 +6,25 @@ import glob
 import pandas as pd
 import numpy as np
 
-# --- 1. 配置区 ---
+# --- 1. Configuration ---
 UNION_CSV_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/Maxquant_score_union_trim/" 
 INTERSECT_CSV_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/Maxquant_score_intersect_trim/"
 OUTPUT_FILE = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/merged_gain/Maxquant_combination_gains_trim_peptide.csv"
 
 def calculate_gains():
-    print("正在读取 CSV 文件...")
+    print("Reading CSV files...")
     
     union_files = glob.glob(os.path.join(UNION_CSV_DIR, "*ombined_metrics*peptide.csv"))
     intersect_files = glob.glob(os.path.join(INTERSECT_CSV_DIR, "combined_metrics*peptide.csv"))
 
     if not union_files or not intersect_files:
-        print("错误: 未找到足够的 CSV 文件，请检查路径是否正确。")
+        print("Error: Insufficient CSV files; check the paths.")
         return
 
     df_union = pd.concat([pd.read_csv(f) for f in union_files], ignore_index=True)
     df_intersect = pd.concat([pd.read_csv(f) for f in intersect_files], ignore_index=True)
 
-    print(f"共加载了 {len(df_union)} 条 Union 记录，{len(df_intersect)} 条 Intersect 记录。")
+    print(f"Loaded {len(df_union)} Union records, {len(df_intersect)} Intersect records.")
 
     merge_keys = ['aligner', 'sample', 'tool_a', 'tool_b']
 
@@ -41,14 +41,14 @@ def calculate_gains():
         'fscore_combined': 'fscore_combined_union'
     }, inplace=True)
 
-    print("正在合并两组数据...")
+    print("Merging the two datasets...")
     df_merged = pd.merge(df_union, df_intersect_subset, on=merge_keys, how='inner')
 
     if df_merged.empty:
-        print("警告: 合并后数据为空！请确保两组数据的 aligner, sample, tool_a, tool_b 完全匹配。")
+        print("Warning: The merged data are empty. Ensure aligner, sample, tool_a, and tool_b match exactly between datasets.")
         return
 
-    print("正在计算 Combination Gains...")
+    print("Calculating combination gains...")
 
     df_merged['max_recall'] = np.maximum(df_merged['recall_a'], df_merged['recall_b'])
     df_merged['max_precision'] = np.maximum(df_merged['precision_a'], df_merged['precision_b'])
@@ -78,9 +78,9 @@ def calculate_gains():
     df_merged = df_merged[final_columns]
 
     df_merged.to_csv(OUTPUT_FILE, index=False)
-    print(f"\n计算完成！")
-    print(f"有效配对数据共 {len(df_merged)} 条。")
-    print(f"结果已成功保存至: {OUTPUT_FILE}")
+    print(f"\nCalculation completed!")
+    print(f"Valid paired records: {len(df_merged)}.")
+    print(f"Results saved to: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     calculate_gains()

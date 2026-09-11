@@ -8,7 +8,7 @@ SAMPLE_SHEET = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/c
 try:
     SAMPLES = pd.read_csv(SAMPLE_SHEET, sep="\t")['sample'].tolist()
 except Exception as e:
-    raise ValueError(f"无法读取或解析样本文件: {SAMPLE_SHEET}. 请确保它是一个tab分割的文件，且包含一个名为 'sample' 的列头。错误: {e}")
+    raise ValueError(f"Unable to read or parse the sample sheet: {SAMPLE_SHEET}. Ensure that it is a tab-delimited file, and contains a column named 'sample'. Error: {e}")
 
 SPE = 'Human' 
 MAPPING_SOFTWARE = ['STAR', 'hisat2', 'tophat2']
@@ -23,13 +23,13 @@ BAM_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/Mapping_trim5prime/merge_
 GTF = "/home/tangyuewen/ORF_benchmark/Ref/gencode.v43.annotation.gtf"
 FA = "/home/tangyuewen/ORF_benchmark/Ref/GRCh38.primary_assembly.genome.fa"
 SCRIPTS_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/scripts/ORF_detect/scripts"
-GENOME_FILE = "/home/tangyuewen/ORF_benchmark/Ref/genome_file" # 修改: 使用您自己的路径
+GENOME_FILE = "/home/tangyuewen/ORF_benchmark/Ref/genome_file" # Edit this path for your environment
 
 R_ANNO = os.path.basename(GTF)
 if SPE == 'Human':
     SCIENTIFIC_NAME = SCIENTIFIC_NAME_LIST[0]
     ANNO_NAME = ANNO_NAME_LIST[0]
-# ... (保留其他物种的 elif 判断) ...
+# ... (retain the elif branches for other species) ...
 else:
     print('please check whether the right scientific name in this snakefile!!!')
     os._exit(1)

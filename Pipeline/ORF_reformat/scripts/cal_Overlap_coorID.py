@@ -1,47 +1,47 @@
 import gzip
 import csv
 
-# --- 設定 (Configuration) ---
-# 檔案 A 的路徑
+# --- Configuration (Configuration) ---
+# Path to file A
 #FILE_A = "/home/tangyuewen/ORF_benchmark/final_ORFs/trim/orf_pred_default/SRX876063_SRX876069_hisat2_ribohmm_gcoor.tsv.gz"
 FILE_B = "/home/tangyuewen/ORF_benchmark/rerun_2025.5/ORFblock/final_ORFs/orf_pred_default/SRX876063_SRX876069_hisat2_ORFquant_gcoor.tsv.gz"
-# 檔案 B 的路徑
+# Path to file B
 FILE_A = "/home/tangyuewen/ORF_benchmark/rerun_2025.5/ORFblock/final_ORFs/orf_pred_default/SRX876063_SRX876069_hisat2_ribohmm_gcoor.tsv.gz"
 
-# 要提取的欄位索引 (第三欄的索引是 2)
+# Column index to extract (the third column has index 2)
 # The column index to extract (column 3 has an index of 2)
 COLUMN_INDEX = 2 
-#0是基因名，1是转录本名，2是gcoor_id
+#0 is the gene name, 1 is the transcript name, and 2 is gcoor_id
 
-# --- 函數定義 (Function Definition) ---
+# --- Function definition (Function Definition) ---
 
 def get_unique_ids_from_file(filepath, col_index):
     """
-    從一個 gzipped TSV 檔案中讀取指定的欄位，並返回一個包含所有不重複 ID 的集合 (set)。
+    Read the specified column from a gzipped TSV file and return the set of unique IDs.
     Reads a specified column from a gzipped TSV file and returns a set of unique IDs.
     """
     unique_ids = set()
     try:
-        # 使用 'rt' 模式以文字模式讀取
+        # Use rt mode to read text
         with gzip.open(filepath, 'rt', encoding='utf-8') as f:
-            # 使用 csv.reader 處理 TSV 格式，更穩健
+            # Use csv.reader for robust TSV parsing
             reader = csv.reader(f, delimiter='\t')
             
-            # 跳過標頭行
+            # Skip the header row
             # Skip the header line
             header = next(reader, None)
             if header is None:
                 print(f"Warning: File is empty or has no header - {filepath}")
                 return unique_ids
 
-            # 讀取剩餘的每一行
+            # Read each remaining row
             for row in reader:
-                # 確保行中有足夠的欄位
+                # Ensure that the row contains enough columns
                 if len(row) > col_index:
                     unique_ids.add(row[col_index])
     except FileNotFoundError:
         print(f"Error: File not found at {filepath}")
-        # 在檔案找不到時返回一個空集合
+        # Return an empty set when the file is not found
         return set()
     except Exception as e:
         print(f"An error occurred while reading {filepath}: {e}")
@@ -49,7 +49,7 @@ def get_unique_ids_from_file(filepath, col_index):
         
     return unique_ids
 
-# --- 主程式 (Main Program) ---
+# --- Main program (Main Program) ---
 
 if __name__ == "__main__":
     print("Step 1: Extracting unique IDs from File A...")
@@ -58,17 +58,17 @@ if __name__ == "__main__":
     print("Step 2: Extracting unique IDs from File B...")
     ids_B = get_unique_ids_from_file(FILE_B, COLUMN_INDEX)
     
-    # --- 計算 (Calculation) ---
+    # --- Calculation (Calculation) ---
     
-    # 獲取各個檔案的獨立 ID 總數
+    # Get the number of unique IDs in each file
     total_A = len(ids_A)
     total_B = len(ids_B)
     
-    # 使用集合的 intersection() 方法計算交集
+    # Use set.intersection() to calculate the overlap
     common_ids = ids_A.intersection(ids_B)
     common_count = len(common_ids)
     
-    # --- 輸出結果 (Print Results) ---
+    # --- Print results (Print Results) ---
     
     print("----------------------------------------")
     print("Comparison Results:")
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     print(f"Number of common coordinate_ids: {common_count}")
     print("----------------------------------------")
     
-    # 計算百分比並處理除以零的錯誤
+    # Calculate percentages and handle division by zero
     if total_A > 0:
         percent_A = (common_count / total_A) * 100
         print(f"Overlap: {percent_A:.2f}% of File A's IDs are present in File B.")

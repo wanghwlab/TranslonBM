@@ -4,7 +4,7 @@ import re
 
 def extract_parameters(path_string, keywords):
     """
-    一个辅助函数，用于从路径字符串中查找并连接存在的关键词。
+    Helper function that finds and joins matching keywords in a path string.
     """
     found_keywords = [k for k in keywords if k in path_string]
     if found_keywords:
@@ -13,11 +13,11 @@ def extract_parameters(path_string, keywords):
 
 def process_benchmark_files(root_directory, output_csv_path):
     """
-    遍历指定路径下的所有 .txt 文件，提取信息，并合并成一个 CSV 文件。
+    Traverse all .txt files under the specified path, extract information, and merge it into a CSV file.
     """
     all_data_rows = []
 
-    print(f"开始在 '{root_directory}' 文件夹中搜索 .txt 文件...")
+    print(f"Searching for .txt files under '{root_directory}' ...")
 
     for root, dirs, files in os.walk(root_directory):
         for filename in files:
@@ -42,7 +42,7 @@ def process_benchmark_files(root_directory, output_csv_path):
                 try:
                     data_df = pd.read_csv(full_path, sep='\t')
                     if data_df.empty:
-                        print(f"警告：文件为空，已跳过：{full_path}")
+                        print(f"Warning: File is empty and was skipped: {full_path}")
                         continue
                     
                     data_df['sample'] = sample
@@ -51,17 +51,17 @@ def process_benchmark_files(root_directory, output_csv_path):
 
                     all_data_rows.append(data_df)
                 except Exception as e:
-                    print(f"错误：处理文件 {full_path} 时出错：{e}")
+                    print(f"Error: Processing file {full_path} failed: {e}")
 
     if not all_data_rows:
-        print("未找到任何在 'time_benchmarks' 子文件夹下的 .txt 文件。")
+        print("No .txt files were found under a time_benchmarks subdirectory.")
         return
 
-    print("正在合并所有数据...")
+    print("Merging all data...")
     final_df = pd.concat(all_data_rows, ignore_index=True)
 
 
-    print("正在从路径中提取 software, chr, 和 parameter 信息...")
+    print("Extracting software, chr, and parameter information from paths...")
     regex_pattern = r'(\w+)_(chr[NM])'
     extracted_info = final_df['doc_path'].str.extract(regex_pattern)
     
@@ -86,8 +86,8 @@ def process_benchmark_files(root_directory, output_csv_path):
     final_df = final_df[desired_order]
 
     final_df.to_csv(output_csv_path, index=False)
-    print(f"\n处理完成！结果已成功保存到：{output_csv_path}")
-    print(f"总共处理了 {len(final_df)} 个文件记录。")
+    print(f"\nProcessing completed. Results saved to: {output_csv_path}")
+    print(f"Processed {len(final_df)} file records.")
 
 
 if __name__ == '__main__':

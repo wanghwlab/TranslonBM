@@ -3,35 +3,35 @@ import glob
 import os
 
 def extract_rpbp_offsets():
-    # 1. 设置搜索路径
+    # 1. Set the search path
     input_pattern = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/rpbp/rpbp_chrN/orf_pred_default/*/metagene-profiles/*.periodic-offsets.csv.gz"
     
-    print(f"正在搜索文件: {input_pattern} ...")
+    print(f"Searching for files: {input_pattern} ...")
     files = glob.glob(input_pattern)
     
     if not files:
-        print("错误：未找到任何 .csv.gz 文件，请检查路径。")
+        print("Error: No .csv.gz files were found; check the path.")
         return
 
-    print(f"共找到 {len(files)} 个文件，开始处理...")
+    print(f"Found {len(files)} files; starting processing...")
     
     all_data = []
 
     for file_path in files:
         try:
-            # --- A. 解析文件名提取 Sample ---
+            # --- A. Parse the file name to extract the sample ---
             basename = os.path.basename(file_path)
             
             sample_name = basename.replace(".periodic-offsets.csv.gz", "")
             
-            # --- B. 读取 Gzip CSV ---
+            # --- B. Read the gzipped CSV ---
             df = pd.read_csv(file_path, compression='gzip')
             
             if 'length' not in df.columns or 'highest_peak_offset' not in df.columns:
-                print(f"跳过文件 {basename}: 列名不匹配")
+                print(f"Skipping file {basename}: column names do not match")
                 continue
 
-            # --- C. 数据清洗与转换 ---
+            # --- C. Clean and transform data ---
             temp_df = df[['length', 'highest_peak_offset']].copy()
             
             temp_df['read_length'] = temp_df['length'].astype(int)
@@ -45,9 +45,9 @@ def extract_rpbp_offsets():
             all_data.append(final_cols_df)
             
         except Exception as e:
-            print(f"处理文件 {basename} 时出错: {e}")
+            print(f"Processing file {basename} failed: {e}")
 
-    # --- D. 合并并保存 ---
+    # --- D. Merge and save ---
     if all_data:
         final_df = pd.concat(all_data, ignore_index=True)
         final_df = final_df[['sample', 'ORFtools', 'read_length', 'offset']]
@@ -57,13 +57,13 @@ def extract_rpbp_offsets():
         final_df.to_csv(output_file, index=False)
         
         print("-" * 30)
-        print("处理完成！")
-        print(f"包含样本数: {final_df['sample'].nunique()}")
-        print(f"文件已保存为: {os.path.abspath(output_file)}")
-        print("\n数据预览:")
+        print("Processing completed!")
+        print(f"Number of samples: {final_df['sample'].nunique()}")
+        print(f"File saved as: {os.path.abspath(output_file)}")
+        print("\nData preview:")
         print(final_df.head())
     else:
-        print("未提取到任何有效数据。")
+        print("No valid data were extracted.")
 
 if __name__ == "__main__":
     extract_rpbp_offsets()

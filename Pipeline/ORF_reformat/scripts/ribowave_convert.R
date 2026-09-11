@@ -40,39 +40,39 @@ gencode_transcript_seq <- read_tsv(
 #    output_func(tmp_file, gppy)
 #})
 
-# 建议在调试阶段去掉 possibly，或者像这样保留但确保逻辑正确
+# Remove possibly during debugging, or keep it while ensuring that the logic remains correct
 prepare_gppy <- possibly(function(raw_file, gppy) {
     
-    # 1. 读取文件：关闭表头自动识别 (col_names = F)
+    # 1. Read the file with automatic header detection disabled (col_names = F)
     tmp_file <- read_tsv(raw_file, col_names = FALSE, col_types = cols(.default = "c"))
     
-    # 2. 关键修复：拆分列
-    # 假设格式为: TranscriptID_Frame_Start_Stop
-    # 使用 separate 将 X1 拆分为需要的列
+    # 2. Key fix: split columns
+    # Assumed format: TranscriptID_Frame_Start_Stop
+    # Use separate to split X1 into the required columns
     tmp_file <- tmp_file |>
         tidyr::separate(
             col = X1, 
             into = c("transcript_id", "frame", "ORF_tstart", "ORF_tstop"), 
             sep = "_", 
-            remove = FALSE, # 保留原始列以防万一
-            convert = TRUE  # 自动将数字字符串转换为数值型
+            remove = FALSE, # Retain the original column as a safeguard
+            convert = TRUE  # Convert numeric strings to numeric values automatically
         ) |>
-        # 确保 Start/Stop 是数字，防止后续计算报错
+        # Ensure Start and Stop are numeric to prevent downstream errors
         dplyr::mutate(
             ORF_tstart = as.numeric(ORF_tstart),
             ORF_tstop = as.numeric(ORF_tstop)
         )
 
-    # 3. 后续逻辑保持不变
+    # 3. The subsequent logic is unchanged
     tmp_file <- tmp_file |>
         dplyr::inner_join(
             gencode_transcript_seq,
             by = c("transcript_id" = "transcript_id")
         ) |>
         dplyr::mutate(
-            # 注意：R中substr索引从1开始。如果你的mx文件是0-based坐标，这里可能需要调整 (+1)
-            # 通常 Ribowave 输出可能是 0-based 或 1-based，请根据具体工具文档确认。
-            # 假设输入是 1-based，直接使用：
+            # Note: substr indices in R start at 1. If the mx file uses 0-based coordinates, this may require adjustment (+1)
+            # Ribowave output may be 0-based or 1-based; confirm this in the tool documentation.
+            # Assume the input is 1-based and use it directly:
             ORF_sequence = stringr::str_sub(transcript_sequence, ORF_tstart, ORF_tstop),
             ORF_tstart_1base = ORF_tstart,
             ORF_tstop_1base = ORF_tstop,

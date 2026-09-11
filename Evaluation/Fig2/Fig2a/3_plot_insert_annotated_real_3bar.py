@@ -12,7 +12,7 @@ matplotlib.use('Agg')
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
-# 1. 更新后的名称映射（包含仿真数据和 6 套 SRX 实测数据）
+# 1. Updated name mapping (including simulated data and six SRX experimental datasets)
 name_mapping = {
     #"simulation_6M_T1": "simulation_6M_T1",
     #"simulation_6M_T3": "simulation_6M_T3",
@@ -26,7 +26,7 @@ name_mapping = {
     "SRX11812007": "Chothani et al.(2022)",
 }
 
-# 颜色方案
+# Color palette
 color_map_name = 'Set3'
 cmap = plt.get_cmap(color_map_name)
 #colors = [plt.colors.to_hex(cmap(i)) for i in [4, 5, 6, 2, 3]]
@@ -177,4 +177,4 @@ for annotation in annotation_types:
     plt.tight_layout()
     plt.savefig(output_path, format="pdf", bbox_inches="tight")
     plt.close()
-    print(f"成功保存至: {output_path}")
+    print(f"Saved successfully to: {output_path}")

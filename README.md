@@ -39,6 +39,7 @@ TranslonBM/
 │   └── Require Input Data/               # Required input files
 │
 ├── Pipeline/                             # Ribo-seq data preprocessing and ORF prediction
+│   ├── envs/                             # Version-resolved Conda environments
 │   ├── ORF_detect_Riboseq/               # ORF prediction on real Ribo-seq datasets
 │   │   └── scripts/
 │   ├── ORF_detect_Synthetic/             # ORF prediction on simulation datasets

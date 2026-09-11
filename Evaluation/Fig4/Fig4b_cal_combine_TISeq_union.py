@@ -10,7 +10,7 @@ from collections import defaultdict
 import itertools
 import sys
 
-# --- 1. 配置区  ---
+# --- 1. Configuration  ---
 BASE_INPUT_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/"
 TI_SEQ_DIR = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/final_ORFs/merged_ATG/TISeq/"
 BASE_OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/TISeq_score_union_untrim/"
@@ -40,9 +40,9 @@ RIBO_TO_TI_MAPPING = {
 NUM_PROCESSES = 32
 
 
-# --- 2. 核心功能函数 ---
+# --- 2. Core functions ---
 def parse_filename(filename_str: str) -> tuple:
-    """从复杂文件名中解析出 (样本名, 比对软件, 预测工具)。"""
+    """Parse the sample, aligner, and prediction tool from a complex file name."""
     base = filename_str.replace('_gcoor.tsv.gz', '')
     parts = base.split('_')
     if len(parts) >= 3:
@@ -52,8 +52,8 @@ def parse_filename(filename_str: str) -> tuple:
 
 def preload_ti_seq_gold_standards(gt_directory_path: str) -> dict:
     """
-    预加载TI-seq金标准库。
-    返回一个字典，键是 (样本名, 比对软件)，值是该样本的TIS坐标集合 (set)。
+    Preload the TI-seq ground-truth reference.
+    Return a dictionary keyed by (sample, aligner), with the sample TIS coordinate set as the value.
     """
     ground_truth_library = {}
     print(f"--- Pre-loading TI-seq Ground Truth Library (Source Tool: {GROUND_TRUTH_TOOL}) ---")
@@ -98,8 +98,8 @@ def preload_ti_seq_gold_standards(gt_directory_path: str) -> dict:
 
 def load_orfs_from_file(filepath: str) -> tuple:
     """
-    从单个文件中加载ORF列表，每个ORF包含其标识和TIS坐标。
-    同时根据起始密码子区分为 ATG 和 NTG 列表。
+    Load the ORF list from one file; each ORF contains an identifier and TIS coordinate.
+    Also separate the ORFs into ATG and NTG lists by start codon.
     """
     try:
         sample, aligner, tool = parse_filename(os.path.basename(filepath))
@@ -137,7 +137,7 @@ def load_orfs_from_file(filepath: str) -> tuple:
 
 def calculate_orf_metrics(predicted_orfs: list, truth_set: set) -> dict:
     """
-    为给定的ORF列表计算所有指标，FN基于TIS覆盖情况。
+    Calculate all metrics for the given ORF list, with FN based on TIS coverage.
     """
     if not predicted_orfs:
         return {'tp': 0, 'fp': 0, 'fn': len(truth_set), 'tis_hit': 0, 'precision': 0.0, 'recall': 0.0, 'fscore': 0.0, 'total_predicted': 0}
@@ -159,7 +159,7 @@ def calculate_orf_metrics(predicted_orfs: list, truth_set: set) -> dict:
 
 
 def main():
-    """主执行函数。"""
+    """Main function."""
     print("--- Starting ORF Combination Performance Analysis (using TI-seq as Ground Truth) ---")
 
     os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)

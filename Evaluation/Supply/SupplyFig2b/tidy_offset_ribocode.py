@@ -2,40 +2,40 @@ import glob
 import os
 import csv
 
-# ================= 配置区域 =================
+# ================= Configuration =================
 
-# 1. 输入文件的通配符路径
+# 1. Input-file glob pattern
 INPUT_PATTERN = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/ORFdetect/ribocode/ribocode_chrN/P_site_determination/SR*/SRX*_pre_config.txt"
 
-# 2. 输出文件名
+# 2. Output file name
 OUTPUT_FILE = "/home/tangyuewen/ORF_benchmark/rerun_2025.9/plots/offset_plots_real/ribocode_extracted_offsets.csv"
 
-# ================= 主程序 =================
+# ================= Main program =================
 
 def extract_ribocode_offsets():
-    # 查找所有匹配的文件
+    # Find all matching files
     files = glob.glob(INPUT_PATTERN)
     
     if not files:
-        print("未找到任何文件，请检查路径配置。")
+        print("No files were found; check the path configuration.")
         return
 
-    print(f"找到 {len(files)} 个文件，开始提取...")
+    print(f"Found {len(files)} files; starting extraction...")
 
-    # 打开 CSV 文件准备写入
+    # Open the CSV file for writing
     with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile) # 默认逗号分隔
+        writer = csv.writer(csvfile) # comma-delimited by default
         
-        # 写入表头
+        # Write the header
         writer.writerow(["sample", "ORFtools", "read_length", "offset"])
 
         for file_path in files:
             try:
-                # 读取文件所有行
+                # Read all lines
                 with open(file_path, 'r') as infile:
                     lines = infile.readlines()
                 
-                # 寻找非注释行（不以 # 开头且非空的行）
+                # Find a non-comment line (nonempty and not beginning with #)
                 config_line = None
                 for line in lines:
                     stripped_line = line.strip()
@@ -43,40 +43,40 @@ def extract_ribocode_offsets():
                         config_line = stripped_line
                         break
                 
-                # 如果找到了配置行，进行解析
+                # Parse the configuration line if one was found
                 if config_line:
-                    # 使用空白字符分割 (Tab 或 空格)
+                    # Split on whitespace (tab or space)
                     parts = config_line.split()
                     
                     if len(parts) >= 5:
-                        # parts[0] -> SampleName (例如 SRX876063_SRX876069_tophat2)
-                        # parts[3] -> ReadLengths (例如 25,28,29)
-                        # parts[4] -> Offsets (例如 9,12,12)
+                        # parts[0] -> SampleName (for example SRX876063_SRX876069_tophat2)
+                        # parts[3] -> ReadLengths (for example 25,28,29)
+                        # parts[4] -> Offsets (for example 9,12,12)
                         
                         sample_name = parts[0]
                         lengths_str = parts[3]
                         offsets_str = parts[4]
                         
-                        # 将逗号分隔的字符串转为列表
+                        # Convert comma-delimited strings to lists
                         lengths = lengths_str.split(',')
                         offsets = offsets_str.split(',')
                         
-                        # 确保长度和offset数量一致，然后成对写入
+                        # Ensure that lengths and offsets have equal counts, then write paired values
                         if len(lengths) == len(offsets):
                             for l, o in zip(lengths, offsets):
-                                # 写入一行: sample, ribocode, length, offset
+                                # Write one row: sample, ribocode, length, offset
                                 writer.writerow([sample_name, "ribocode", l, o])
                         else:
-                            print(f"警告: {sample_name} 的长度与Offset数量不匹配")
+                            print(f"Warning: {sample_name} has different numbers of lengths and offsets")
                     else:
-                        print(f"警告: 文件格式异常 (列数不足): {file_path}")
+                        print(f"Warning: Unexpected file format (insufficient columns): {file_path}")
                 else:
-                    print(f"警告: 未在文件中找到有效配置行: {file_path}")
+                    print(f"Warning: No valid configuration line was found in the file: {file_path}")
 
             except Exception as e:
-                print(f"处理文件出错 {file_path}: {e}")
+                print(f"Error processing file {file_path}: {e}")
 
-    print(f"处理完成！结果已保存至: {os.path.abspath(OUTPUT_FILE)}")
+    print(f"Processing completed. Results saved to:  {os.path.abspath(OUTPUT_FILE)}")
 
 if __name__ == "__main__":
     extract_ribocode_offsets()

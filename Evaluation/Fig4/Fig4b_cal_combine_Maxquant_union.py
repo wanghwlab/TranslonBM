@@ -7,7 +7,7 @@ import itertools
 import re
 from collections import defaultdict
 
-# --- 1. 配置区 ---
+# --- 1. Configuration ---
 
 WORKDIR = "/home/tangyuewen/ORF_benchmark/Maxquant_2026.1"
 BASE_OUTPUT_DIR = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots_combine/Maxquant_score_union_untrim/"
@@ -23,15 +23,15 @@ TRIM_FLAG = "untrim"
 FDR = ""
 
 
-# --- 2. 辅助功能函数 ---
+# --- 2. Helper functions ---
 def is_all_seq(protein_id_str: str) -> bool:
-    """检查蛋白质ID是否全部为预测的seq_ ID"""
+    """Check whether all protein IDs are predicted seq_ IDs"""
     if not isinstance(protein_id_str, str): return False
     main_ids = protein_id_str.split('|')[0]
     return all(id_val.startswith('seq_') for id_val in main_ids.split(';'))
 
 def has_any_unique_peptides(count_str: str) -> bool:
-    """检查蛋白质组是否含有任何独特肽段"""
+    """Check whether the protein group contains any unique peptides"""
     if not isinstance(count_str, str): return False
     try:
         return any(int(c) > 0 for c in count_str.split(';'))
@@ -39,17 +39,17 @@ def has_any_unique_peptides(count_str: str) -> bool:
         return False
 
 def extract_seq_ids(id_string: str) -> list:
-    """从字符串中提取所有seq_ ID"""
+    """Extract all seq_ IDs from a string"""
     if not isinstance(id_string, str): return []
     return re.findall(r'seq_\d+', id_string)
 
 
-# --- 3. 核心功能模块 ---
+# --- 3. Core module ---
 def load_all_predictions_from_ref(sample: str, pred_flag: str, trim_flag: str) -> dict:
     """
-    ★ 新的核心函数: 从 ref_index.tsv 文件一次性加载所有工具的预测结果。
-    返回一个按 aligner 和 tool 组织好的嵌套字典。
-    结构: {aligner: {tool: {set_of_sequence_ids}}}
+    ★ New core function: load predictions from all tools from ref_index.tsv in one pass.
+    Return a nested dictionary organized by aligner and tool.
+    Structure: {aligner: {tool: {set_of_sequence_ids}}}
     """
     ref_path = os.path.join(WORKDIR, "maxquant_ref", f"{pred_flag}_{trim_flag}", f"{sample}_ref_index.tsv")
     print(f"Loading all predictions from reference file: {ref_path}")
@@ -73,8 +73,8 @@ def load_all_predictions_from_ref(sample: str, pred_flag: str, trim_flag: str) -
 
 def load_ms_gold_standard(sample: str, aligner: str, level: str, pred_flag: str, trim_flag: str) -> tuple:
     """
-    加载MaxQuant的质谱验证结果作为金标准 (逻辑保持不变)。
-    返回一个包含(金标准ID集合, 金标准总数)的元组。
+    Load MaxQuant mass-spectrometry validation results as the ground truth (logic unchanged).
+    Return a tuple containing the ground-truth ID set and total count.
     """
     print(f"  Loading MS Gold Standard for: {sample} | {aligner} | {level.capitalize()} Level")
     rerun_subdir = f"{pred_flag}_{trim_flag}"
@@ -111,7 +111,7 @@ def load_ms_gold_standard(sample: str, aligner: str, level: str, pred_flag: str,
         return None, None
 
 def calculate_metrics(predicted_set: set, gold_standard_set: set, gold_standard_total: int) -> dict:
-    """基于预测集和金标准集计算性能指标 (逻辑保持不变)。"""
+    """Calculate performance metrics from the prediction and ground-truth sets (logic unchanged)."""
     tp = len(predicted_set.intersection(gold_standard_set))
     fp = len(predicted_set) - tp
     fn = gold_standard_total - tp
@@ -123,9 +123,9 @@ def calculate_metrics(predicted_set: set, gold_standard_set: set, gold_standard_
     return {'tp': tp, 'fp': fp, 'fn': fn, 'fscore': f_score, 'precision': precision, 'recall': recall}
 
 
-# --- 4. 主程序  ---
+# --- 4. Main program  ---
 def main():
-    """主执行函数，采用与原始脚本一致的数据加载和统计逻辑。"""
+    """Main function using the same data-loading and statistical logic as the original script."""
     print("--- Starting ORF Combination Performance Analysis (Corrected Workflow) ---")
     os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
 

@@ -10,22 +10,22 @@ matplotlib.use('Agg')
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
-# 1. 定义文件路径
+# 1. Define file paths
 csv1_path = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/1tools_percent/1_tools_proportion_summary_simu_untrim.csv"
 csv2_path = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/alltools_percent/overlap_summary_stats_simu_untrim.csv"
 output_pdf = "/home/tangyuewen/ORF_benchmark/final_ORFs_2026.1/plots/tools_overlap_study/1tools_percent/ORF_overlap_distribution_simu_untrim.pdf"
 
-# 2. 读取数据
+# 2. Read data
 df1 = pd.read_csv(csv1_path)
 df2 = pd.read_csv(csv2_path)
 
 df1 = df1.rename(columns={'Dataset': 'Dataset_ID'})
 df = pd.merge(df2, df1, on=['Dataset_ID', 'Aligner'], how='inner')
 
-# --- 数据清洗 ---
+# --- Data cleaning ---
 df['Author_Year_Clean'] = df['Author_Year'].str.replace(r'\(|\)', '', regex=True)
 
-# 3. 计算数值
+# 3. Calculate values
 df['Common_count'] = df['11_tools_count']
 df['Overlap_count'] = df['Total_ORFs'] - df['Unique_count'] - df['Common_count']
 
@@ -33,7 +33,7 @@ df['Unique_pct_total'] = (df['Unique_count'] / df['Total_ORFs']) * 100
 df['Overlap_pct_total'] = (df['Overlap_count'] / df['Total_ORFs']) * 100
 df['Common_pct_total'] = (df['Common_count'] / df['Total_ORFs']) * 100
 
-# 4. 绘图配置
+# 4. Plot configuration
 dataset_order = [
     #"Ji et al. 2015", 
     #"Gao et al. 2015", 
@@ -51,7 +51,7 @@ dataset_order = [
 aligners = ['tophat2', 'hisat2', 'STAR']
 colors = ['#89bbe9', '#d2c2d7', '#b2cfa5']
 
-print(f"开始绘制横向柱状图并保存至 {output_pdf} ...")
+print(f"Plotting the horizontal bar chart and saving to {output_pdf} ...")
 
 with PdfPages(output_pdf) as pdf:
     fig, axes = plt.subplots(3, 1, figsize=(8, 12))
@@ -65,7 +65,7 @@ with PdfPages(output_pdf) as pdf:
             continue
             
         df_sub['Author_Year_Clean'] = pd.Categorical(df_sub['Author_Year_Clean'], categories=dataset_order, ordered=True)
-        df_sub = df_sub.sort_values('Author_Year_Clean', ascending=False) # ascending=False 让 Ji et al. 在最上面
+        df_sub = df_sub.sort_values('Author_Year_Clean', ascending=False) # ascending=False places Ji et al. at the top
         
         y_labels = df_sub['Author_Year_Clean']
         y = np.arange(len(y_labels))
@@ -79,7 +79,7 @@ with PdfPages(output_pdf) as pdf:
         ax.barh(y, x_overlap, height, left=x_unique, label='Overlap (2-10 tools)', color=colors[1], edgecolor='white')
         ax.barh(y, x_common, height, left=x_unique + x_overlap, label='Common (11 tools)', color=colors[2], edgecolor='white')
         
-        # 5. 添加标注
+        # 5. Add labels
         for i in range(len(y)):
             ribo_pct_val = df_sub['ribotricer_percent(%)'].iloc[i]
             x_ribo_pos = x_unique[i] * (ribo_pct_val / 100)
@@ -87,19 +87,19 @@ with PdfPages(output_pdf) as pdf:
             ax.vlines(x=x_ribo_pos, ymin=y[i]-height/2, ymax=y[i]+height/2, 
                       colors='black', linestyles='--', linewidth=1.2, alpha=0.8)
             
-            # --- 文本标注 ---
-            # 1. Unique 标注 (位于第一个柱子中间)
+            # --- Text labels ---
+            # 1. Unique label (centered in the first bar)
             u_pct = df_sub['Unique_pct_total'].iloc[i]
             ax.text(x_unique[i] / 2, y[i], f"{u_pct:.2f}%\n(RiboTricer:{ribo_pct_val:.2f}%)", 
                     ha='center', va='center', fontsize=8.5, fontweight='bold')
             
-            # 2. Overlap 标注 (位于第二个柱子中间)
+            # 2. Overlap label (centered in the second bar)
             o_pct = df_sub['Overlap_pct_total'].iloc[i]
             if o_pct > 0.1:
                 ax.text(x_unique[i] + x_overlap[i]/2, y[i], f"{o_pct:.2f}%", 
                         ha='center', va='center', fontsize=9)
             
-            # 3. Common 标注 (位于第三个柱子中间)
+            # 3. Common label (centered in the third bar)
             c_pct = df_sub['Common_pct_total'].iloc[i]
             x_common_pos = x_unique[i] + x_overlap[i] + x_common[i]/2
             h_align = 'left' if c_pct < 2.0 else 'center'
@@ -119,4 +119,4 @@ with PdfPages(output_pdf) as pdf:
     pdf.savefig(fig)
     plt.close()
 
-print("横向柱状图绘制完毕！请检查 PDF 文件。")
+print("Horizontal bar chart completed. Check the PDF file.")
