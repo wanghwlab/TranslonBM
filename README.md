@@ -35,7 +35,7 @@ TranslonBM is a unified benchmarking framework for evaluating computational tool
 ```
 TranslonBM/
 ├── RiboSim/                              # Ribo-seq RPF data simulator
-│   ├── Simulation.R                      # Main simulation script
+│   ├── RiboSim.R                         # Main simulation script
 │   └── Require Input Data/               # Required input files
 │
 ├── Pipeline/                             # Ribo-seq data preprocessing and ORF prediction
@@ -112,13 +112,13 @@ After downloading, extract the zip and pass the directory path to `--Path_dir`.
 #### Usage
 
 ```bash
-Rscript Simulation.R --help
+Rscript RiboSim.R --help
 ```
 
 **Minimal example:**
 
 ```bash
-Rscript Simulation.R \
+Rscript RiboSim.R \
     --counts    6000000 \
     --replicate T1 \
     --Path_dir  /path/to/input/data \
@@ -129,7 +129,7 @@ Rscript Simulation.R \
 **Full parameter example:**
 
 ```bash
-Rscript Simulation.R \
+Rscript RiboSim.R \
     --counts          6000000 \
     --replicate       T1 \
     --Path_dir        /path/to/input/data \
