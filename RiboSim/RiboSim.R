@@ -13,21 +13,13 @@
 # ==============================================================================
 
 # ==============================================================================
-# We thank the authors of [simRiboSeq](https://github.com/lareaulab/simRiboSeq) 
-# for making their simulation framework publicly available.
-# ------------------------------------------------------------------------------
-# The footprint geometry model in this script (read = 5' flank + 3-nt P-site
-# codon + 3' flank, with digestion lengths sampled from empirical
-# distributions) was inspired by simRiboSeq, the simulation package
-# accompanying:
+# We thank the developers of simRiboSeq for making their simulation framework 
+# publicly available. Its approach to modeling ribosome footprint geometry 
+# informed the corresponding implementation in RiboSim.
 #
 #   Mok, A., Tunney, R., Benegas, G., Wallace, E. W. J. & Lareau, L. F.
 #   choros: correction of sequence-based biases for accurate quantification
-#   of ribosome profiling data. bioRxiv, doi:10.1101/2023.02.21.529452 (2023).
-#
-#   inspired by: https://github.com/lareaulab/simRiboSeq
-#   (adapted from: digest_transcript(), simulate_footprints() in
-#    simRiboSeq/R/simulate_footprints.R)
+#   of ribosome profiling data. bioRxiv, doi:10.1101/2023.02.21.529452
 # ==============================================================================
 
 suppressPackageStartupMessages(library(argparse))
